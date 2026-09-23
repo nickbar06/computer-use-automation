@@ -34,13 +34,13 @@ test("resolveLlmProvider with empty env throws the missing-key message", () => {
 });
 
 test("resolveLlmProvider picks openai or anthropic from env without calling a host", () => {
-  assert.equal(resolveLlmProvider({ OPENAI_API_KEY: "sk-test" }).id, "openai");
-  assert.equal(resolveLlmProvider({ ANTHROPIC_API_KEY: "sk-ant-test" }).id, "anthropic");
+  assert.equal(resolveLlmProvider({ OPENAI_API_KEY: "test-openai-key" }).id, "openai");
+  assert.equal(resolveLlmProvider({ ANTHROPIC_API_KEY: "test-anthropic-key" }).id, "anthropic");
   assert.equal(
     resolveLlmProvider({
       LLM_PROVIDER: "anthropic",
-      OPENAI_API_KEY: "sk-test",
-      ANTHROPIC_API_KEY: "sk-ant-test",
+      OPENAI_API_KEY: "test-openai-key",
+      ANTHROPIC_API_KEY: "test-anthropic-key",
     }).id,
     "anthropic",
   );

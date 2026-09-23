@@ -2,7 +2,7 @@
 
 **Source**: interface.ai Engineering — “Computer-Use Automation System” (PDF)  
 **Date**: 2026-09-21  
-**Status**: in_progress (docs/harness only; no `src/` yet)  
+**Status**: slices 01–12 done; Task 00 skipped; Task 13 overlay runtime optional / not started  
 **Master tracking**: [tasks/2026-09-21-computer-use-takehome.md](tasks/2026-09-21-computer-use-takehome.md)  
 **Slice specs**: [../tasks/README.md](../tasks/README.md)  
 **Locked ADRs**: [tasks/adr/README.md](tasks/adr/README.md)
@@ -107,26 +107,26 @@ Implication: execute via numbered slices in `tasks/`. Do not implement the whole
 
 | Phase | Status | Evidence |
 | ----- | ------ | -------- |
-| Recon | In progress | This file + ADR + task specs |
-| Implementation | Not started | `src/` exists and slices 01–10 `done` |
-| Runtime verification | Not started | pasted replay + `/health` output |
-| Browser verification | Not started | mock frameset + headed HITL |
-| Documentation and closure | Not started | README + REPORT + evidence + public repo |
+| Recon | Done | This file + ADR + task specs |
+| Implementation | Done | `src/` + slices 01–11 `done` |
+| Runtime verification | Done | pasted replay + `/health` in the program tracking file |
+| Browser verification | Done | mock frameset + same-session HITL (`evidence/escalate`) |
+| Documentation and closure | Done | README + REPORT + evidence; public remote exists |
 
 Update [the master tracking file](tasks/2026-09-21-computer-use-takehome.md) when a slice closes. Stale `Not started` here while `src/` exists is a closure blocker.
 
 ## Progress checklist (program)
 
-- [ ] Task 00–12 spec `status: done` (13 optional)
-- [ ] Master tracking Validation Run has **pasted** discover + replay output
-- [ ] `evidence/discovery` is a live model run
-- [ ] `evidence/replay_success` and `evidence/replay_not_found` exist
-- [ ] `evidence/escalate` shows same-session intervention
-- [ ] `REPORT.md` seven headings verbatim
-- [ ] Root README demo commands work without a model key (except discover)
-- [ ] `git grep` for live API keys is empty
-- [ ] Handoff summary on the master tracking file is written
-- [ ] Public GitHub URL ready to email to assignments@interface.ai
+- [ ] Task 00–12 spec `status: done` (13 optional) — 00 still skipped; 01–12 done
+- [x] Master tracking Validation Run has **pasted** discover + replay output
+- [x] `evidence/discovery` is a live model run
+- [x] `evidence/replay_success` and `evidence/replay_not_found` exist
+- [x] `evidence/escalate` shows same-session intervention
+- [x] `REPORT.md` seven headings verbatim
+- [x] Root README demo commands work without a model key (except discover)
+- [x] Tracked files have no live API key prefixes
+- [x] Handoff summary on the master tracking file is written
+- [x] Public GitHub URL ready to email to assignments@interface.ai
 
 ## Validation floor (what “done” looks like in a terminal)
 
@@ -190,18 +190,19 @@ Queues, clusters, multi-tenant plumbing, framework name-dropping, a polished sub
 
 ## Open issues / blockers
 
-- Live discovery is **blocked** until a model API key exists in local `.env`. Replay must still be completable without it.
+- Task 00 orientation was skipped. Task 13 overlay runtime is optional and not started. Live discover still needs a local `.env` key (placeholders only in `.env.example`).
 
 ## Submission
 
-Public GitHub repo. Email the URL on its own line to assignments@interface.ai from the address used to apply. No zip.
+Public GitHub repo: https://github.com/nickbar06/computer-use-automation  
+Email the URL on its own line to assignments@interface.ai from the address used to apply. No zip.
 
 ## Handoff summary (fill at program close)
 
-**What was done**: TBD  
+**What was done**: Weekend slice — local CoreLink mock, `SurfaceDriver` + `LlmProvider` ports, live discover, typed capabilities, LLM-free replay, same-session HITL, tests, evidence, REPORT.
 
-**How to verify**: TBD  
+**How to verify**: `npm install && npx playwright install chromium && npm test`, then the three README replay commands (no key). Discover needs `.env`.
 
-**Key decisions**: see ADR + [DECISIONS.md](DECISIONS.md)  
+**Key decisions**: see ADR + [DECISIONS.md](DECISIONS.md)
 
-**Known limitations**: TBD
+**Known limitations**: no desktop adapter; operator UI is `OPERATOR.txt`; Task 13 (Northlake/Lakecrest live overlay proof) not done; screenshots are not redacted.

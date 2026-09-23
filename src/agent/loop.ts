@@ -46,6 +46,10 @@ export class DiscoveryRunner {
     const maxSteps = this.options.maxSteps ?? 20;
     const deadline = Date.now() + (this.options.timeoutMs ?? 180_000);
     const logPath = join(evidenceDir, "turns.jsonl");
+    const writeLog = (record: unknown) => {
+      appendRedactedJsonl(logPath, record);
+      appendRedactedJsonl(join(evidenceDir, "discovery.jsonl"), record);
+    };
     mkdirSync(evidenceDir, { recursive: true });
 
     checkNavigation(target, policy);
@@ -77,12 +81,12 @@ export class DiscoveryRunner {
       if (payload.action === "done") {
         const turn = { step, payload, irreversible, observation };
         turns.push(turn);
-        appendRedactedJsonl(logPath, jsonlRecord(turn));
+        writeLog(jsonlRecord(turn));
         const artifact = persistArtifact(turns, outputs, this.options);
         return { turns, stop: "done", outputs, artifact };
       }
       if (payload.action === "stuck") {
-        appendRedactedJsonl(logPath, {
+        writeLog({
           step,
           thought: payload.thought,
           action: "stuck",
@@ -115,7 +119,7 @@ export class DiscoveryRunner {
 
       const turn = { step, payload, irreversible, extracted, observation };
       turns.push(turn);
-      appendRedactedJsonl(logPath, jsonlRecord(turn));
+      writeLog(jsonlRecord(turn));
     }
 
     return { turns, stop: "max_steps", outputs };

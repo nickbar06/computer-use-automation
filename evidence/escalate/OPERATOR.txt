@@ -1,0 +1,8 @@
+HITL session d3f5ecdc
+
+Reason: irreversible step s04_open requires --confirm or a human
+
+Use the already-open window. Do not start a new one.
+
+When finished:
+  npm run cua -- operator resume --session d3f5ecdc

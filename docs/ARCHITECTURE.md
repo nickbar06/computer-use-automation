@@ -1,6 +1,6 @@
-# Architecture (target)
+# Architecture
 
-Nothing in `src/` exists until the tasks create it. This is the picture you are building toward.
+This is the picture the repo implements. Playwright is the first adapter, not the domain.
 
 **WHAT vs HOW** (ADR 09): core domain describes *what* to observe or do. Surface adapters describe *how* on one frontend. Playwright is the first adapter, not the domain.
 

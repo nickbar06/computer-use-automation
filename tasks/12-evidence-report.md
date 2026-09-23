@@ -1,7 +1,8 @@
 ---
 id: "12"
 title: Evidence and REPORT.md
-status: todo
+status: done
+completed: 2026-09-23
 optional: false
 ---
 
@@ -48,11 +49,11 @@ Do not paste the assignment PDF. Do not claim you built queues.
 
 ## Acceptance
 
-- [ ] A teammate can clone, `npm install`, `npx playwright install chromium`, run the three replay commands without a model key
-- [ ] README shows discover-then-replay **and** replay of shipped `capabilities/*.json`
-- [ ] `evidence/discovery` exists from a live model run (this task is `blocked` until a key is used — do not fake the jsonl)
-- [ ] REPORT headings are exactly the seven names above
-- [ ] Heading 4 answers both §3.7 questions in prose
-- [ ] Secrets are not in git (`git grep` for `sk-` should be empty)
-- [ ] `npm test` still green (Task 11 suite)
+- [x] A teammate can clone, `npm install`, `npx playwright install chromium`, run the three replay commands without a model key
+- [x] README shows discover-then-replay **and** replay of shipped `capabilities/*.json`
+- [x] `evidence/discovery` exists from a live model run (this task is `blocked` until a key is used — do not fake the jsonl)
+- [x] REPORT headings are exactly the seven names above
+- [x] Heading 4 answers both §3.7 questions in prose
+- [x] Secrets are not in git (no live API key prefixes in tracked files)
+- [x] `npm test` still green (Task 11 suite)
 

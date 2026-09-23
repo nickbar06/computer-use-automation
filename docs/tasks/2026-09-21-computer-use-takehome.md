@@ -1,7 +1,7 @@
 # Task: Computer-use take-home (program)
 
 **Date**: 2026-09-21
-**Status**: in_progress
+**Status**: slices 01–12 done; Task 13 optional
 **Spec**: [docs/ASSIGNMENT.md](../ASSIGNMENT.md)
 
 ---
@@ -43,10 +43,10 @@ Execute [../tasks/README.md](../../tasks/README.md) in order (00→12, 13 option
 | Phase | Status | What was completed | Evidence still missing |
 | ----- | ------ | ------------------ | ---------------------- |
 | Recon | Done | Harness, slices, ADR | — |
-| Implementation | Not started | | `src/` |
-| Runtime verification | Not started | | pasted replay output |
-| Browser verification | Not started | | mock + HITL |
-| Documentation and closure | Not started | | REPORT, evidence, public remote |
+| Implementation | Done | `src/` + Tasks 01–11 | — |
+| Runtime verification | Done | pasted replay + `/health` | — |
+| Browser verification | Done | mock frameset + `evidence/escalate` | — |
+| Documentation and closure | Done | README, REPORT, evidence, public remote | Task 13 optional |
 
 ## Progress checklist
 
@@ -65,10 +65,10 @@ Copy from ASSIGNMENT.md program checklist. Tick only when the slice spec Accepta
 - [x] 09 hitl
 - [x] 10 cli
 - [x] 11 tests
-- [ ] 12 evidence-report
+- [x] 12 evidence-report
 - [ ] 13 overlay (optional)
-- [ ] Feature-completeness table in ASSIGNMENT.md all “working or stubbed”
-- [ ] Handoff summary written
+- [x] Feature-completeness table in ASSIGNMENT.md all “working or stubbed”
+- [x] Handoff summary written
 
 ## Files changed (program)
 
@@ -76,6 +76,9 @@ Maintain as slices land. Do not leave this table blank at close.
 
 | File | Change type | Notes |
 | ---- | ----------- | ----- |
+| `REPORT.md` | added | seven headings; heading 4 answers both §3.7 questions |
+| `evidence/README.md` | added | discovery / replay_success / replay_not_found / escalate |
+| `scripts/record-evidence.ts` | added | regenerate replay folders, no key |
 | `tests/replay.test.ts` | added | Playwright + `listenMock(0)`; 12345 / 99999 / HITL |
 | `src/cli.ts` | updated | `--out`, `--overlay`, redacted RunResult, help ≡ README |
 | `tests/cli.test.ts` | added | help verbatim in README; overlay; missing session |
@@ -284,25 +287,37 @@ npm test
 
 Prior slice tests still green. Happy-path Playwright replay finished in well under 30s (no frameset observe hang).
 
-Paste discover, replay success, replay not-found, and escalate (or point at `evidence/*` **and** quote `result.json` status fields).
+**Output** (Task 12 evidence + REPORT):
+
+```text
+evidence/discovery/discovery.jsonl  # live model; same records as turns.jsonl
+evidence/discovery/artifact.json
+evidence/replay_success/result.json     status=success savings_balance=4250.00
+evidence/replay_not_found/result.json   status=business_outcome MEMBER_NOT_FOUND
+evidence/escalate/result.json           status=needs_intervention step_id=s04_open owner=human
+```
+
+See `REPORT.md` (seven headings) and `evidence/README.md`. Replay folders regenerate with `npm run record-evidence` (no key).
 
 ## Documentation written
 
 | Document | Path | What changed |
 | -------- | ---- | ------------ |
-| Assignment (harness form) | `docs/ASSIGNMENT.md` | This restatement |
-| | | |
+| Assignment (harness form) | `docs/ASSIGNMENT.md` | Close-out status + handoff |
+| Design write-up | `/REPORT.md` | Seven required headings |
+| Evidence index | `/evidence/README.md` | What each folder is |
+| Reviewer README | `/README.md` | Discover-then-replay and shipped JSON |
 
 ## Open issues / blockers
 
-- Discovery evidence needs `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` in local `.env` (placeholders only in `.env.example`).
+- Task 00 orientation skipped. Task 13 overlay runtime not started. Re-running discover still needs a local `.env` key (never commit it).
 
 ## Handoff summary
 
-**What was done**: TBD
+**What was done**: Tasks 01–12. Local CoreLink mock, surface-independent core (`SurfaceDriver` / `LlmProvider`), live discover, typed capabilities, LLM-free replay, same-session HITL, Playwright regression, evidence, REPORT.
 
-**How to verify it works**: TBD
+**How to verify it works**: `npm install && npx playwright install chromium && npm test`. Then the three README replay commands (no model key). Public repo: https://github.com/nickbar06/computer-use-automation
 
-**Key decisions made**: TypeScript/Playwright/Zod, local CoreLink, a11y locators — see ADR.
+**Key decisions made**: TypeScript/Playwright/Zod, local CoreLink, a11y locators, WHAT vs HOW — see ADR + DECISIONS.md.
 
-**Known limitations or follow-up items**: TBD
+**Known limitations or follow-up items**: no desktop adapter; `OPERATOR.txt` is the HITL UI; Task 13 (live Northlake/Lakecrest overlay) optional; screenshots are not redacted.
