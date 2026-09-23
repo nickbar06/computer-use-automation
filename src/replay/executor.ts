@@ -4,6 +4,7 @@ import { bindUrlTemplate } from "../artifact/canonicalize.ts";
 import type { CapabilityArtifact, Condition, NamedLocator, Step } from "../artifact/schema.ts";
 import type { RunResult } from "../domain/result.ts";
 import type { CanonicalAction, Observation, SurfaceDriver } from "../domain/surface.ts";
+import { attachSessionToDriver, SessionControl, writeHumanLog } from "../escalate/control.ts";
 import { checkAction, checkNavigation, type Policy } from "../safety/policy.ts";
 import { appendRedactedJsonl, dumpsRedacted } from "../safety/redact.ts";
 
@@ -13,6 +14,10 @@ export type ReplayExecutorOptions = {
   policy: Policy;
   confirmIrreversible?: boolean;
   evidenceDir: string;
+  session?: SessionControl;
+  sessionRoot?: string;
+  autoResume?: boolean;
+  operatorTimeoutMs?: number;
 };
 
 export function bindInputs(
@@ -42,7 +47,15 @@ export function resolveValue(step: Step, inputs: Record<string, string>): string
 }
 
 export class ReplayExecutor {
+  private sessionHandle?: SessionControl;
+
   constructor(private readonly options: ReplayExecutorOptions) {}
+
+  private session(): SessionControl {
+    this.sessionHandle ??=
+      this.options.session ?? SessionControl.create(this.options.sessionRoot);
+    return this.sessionHandle;
+  }
 
   async run(rawInputs: Record<string, string>): Promise<RunResult> {
     const { driver, artifact, policy, evidenceDir } = this.options;
@@ -72,13 +85,13 @@ export class ReplayExecutor {
 
       if (step.risk === "irreversible" && !this.options.confirmIrreversible) {
         appendRedactedJsonl(logPath, { step_id: step.id, action: step.action, skipped: "needs_intervention" });
-        return finish({
-          status: "needs_intervention",
-          step_id: step.id,
-          observed: observation.visible_text,
-          outputs,
-          recovered,
-        });
+        const handoff = await this.handoff(
+          `irreversible step ${step.id} requires --confirm or a human`,
+          step.id,
+        );
+        if (handoff.status === "needs_intervention") return finish(handoff);
+        observation = handoff.observation ?? observation;
+        continue;
       }
 
       try {
@@ -119,18 +132,61 @@ export class ReplayExecutor {
 
     for (const checkpoint of artifact.checkpoints) {
       if (!matchCondition(checkpoint, observation)) {
-        await driver.observe(join(evidenceDir, "checkpoint_failure.png"));
-        return finish({
-          status: "failed",
-          expected: conditionLabel(checkpoint),
-          observed: observation.visible_text,
-          outputs,
-          recovered,
-        });
+        observation = await driver.observe(join(evidenceDir, "checkpoint_stuck.png"));
+        const handoff = await this.handoff(`checkpoint failed: ${conditionLabel(checkpoint)}`);
+        if (handoff.status === "needs_intervention") return finish(handoff);
+        observation = handoff.observation ?? observation;
+        if (!matchCondition(checkpoint, observation)) {
+          return finish({
+            status: "failed",
+            expected: conditionLabel(checkpoint),
+            observed: observation.visible_text,
+            outputs,
+            recovered,
+            control: handoff.control,
+          });
+        }
       }
     }
 
     return finish({ status: "success", outputs, recovered });
+  }
+
+  private async handoff(
+    why: string,
+    step_id?: string,
+  ): Promise<Pick<RunResult, "status"> & Partial<RunResult> & { observation?: Observation }> {
+    const { driver, artifact, evidenceDir } = this.options;
+    const shot = join(evidenceDir, `${step_id ?? "checkpoint"}_stuck.png`);
+    const stuck = await driver.observe(shot);
+    const session = this.session();
+    attachSessionToDriver(driver, session.directory);
+    await driver.pauseForHuman();
+    session.requestIntervention({
+      capability: artifact.id,
+      step_id,
+      location: stuck.location,
+      observed: stuck.visible_text,
+      screenshot_path: shot,
+      why,
+    });
+    if (this.options.autoResume) session.signalResume("auto");
+    const resumed = await session.waitForResume(this.options.operatorTimeoutMs ?? 0);
+    if (!resumed) {
+      return {
+        status: "needs_intervention",
+        step_id,
+        observed: stuck.visible_text,
+        control: { owner: "human", session_id: session.session_id },
+      };
+    }
+    const after = await driver.resume();
+    writeHumanLog(session, after);
+    return {
+      status: "success",
+      observation: after,
+      control: { owner: "agent", session_id: session.session_id },
+    };
   }
 
   private async applyHandlers(

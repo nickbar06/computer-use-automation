@@ -62,7 +62,7 @@ Copy from ASSIGNMENT.md program checklist. Tick only when the slice spec Accepta
 - [x] 06 discovery-loop
 - [x] 07 compile-artifact
 - [x] 08 deterministic-replay
-- [ ] 09 hitl
+- [x] 09 hitl
 - [ ] 10 cli
 - [ ] 11 tests
 - [ ] 12 evidence-report
@@ -76,6 +76,10 @@ Maintain as slices land. Do not leave this table blank at close.
 
 | File | Change type | Notes |
 | ---- | ----------- | ----- |
+| `src/escalate/control.ts` | added | file-based SessionControl; no Playwright |
+| `src/replay/executor.ts` | updated | irreversible/checkpoint → pauseForHuman + waitForResume |
+| `src/cli.ts` | updated | `operator resume\|status`, `--auto-resume`, `--operator-timeout` |
+| `tests/control.test.ts` | added | owner flip + fake-driver HITL |
 | `src/replay/executor.ts` | added | LLM-free replay + handler taxonomy |
 | `src/artifact/compile.ts` | added | transcript → capability (`$inputs.member_id`) |
 | `src/agent/loop.ts` | added | `DiscoveryRunner` (SurfaceDriver + LlmProvider) |
@@ -202,6 +206,33 @@ replay open_subaccount --confirm → status=success
 ```
 
 Four Playwright replays finished in ~4.5s total.
+
+**Output** (Task 09 HITL):
+
+```text
+npm test
+ℹ tests 42
+ℹ pass 42
+ℹ fail 0
+
+npm run cua -- replay capabilities/open_subaccount.json --input member_id=12345 --input amount=25.00 --evidence evidence/escalate
+{
+  "status": "needs_intervention",
+  "step_id": "s04_open",
+  "control": { "owner": "human", "session_id": "24d4deed" }
+}
+HITL: npm run cua -- operator resume --session 24d4deed
+
+npm run cua -- operator status --session 24d4deed
+{
+  "session_id": "24d4deed",
+  "owner": "human",
+  "reason": "irreversible step s04_open requires --confirm or a human",
+  "directory": ".../sessions/24d4deed"
+}
+```
+
+`sessions/24d4deed/` has `control.json`, `intervention.json`, `OPERATOR.txt` (already-open window + resume command). `evidence/escalate/s04_open_stuck.png` exists. Replay did not POST `/open` (no `--confirm`). Resume path does not call `chromium.launch` / `newPage`. Default `--operator-timeout` is 0 so CLI does not hang; use `--operator-timeout 180` for a live headed handoff.
 
 Paste discover, replay success, replay not-found, and escalate (or point at `evidence/*` **and** quote `result.json` status fields).
 

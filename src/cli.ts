@@ -7,6 +7,7 @@ import { capabilityArtifactSchema, reviewSummary } from "./artifact/schema.ts";
 import { resolveLlmProvider } from "./llm/resolve.ts";
 import { DEFAULT_ORIGIN, DEFAULT_PORT, ROOT } from "./paths.ts";
 import { listenMock, mainServe } from "./proxy/server.ts";
+import { SessionControl } from "./escalate/control.ts";
 import { ReplayExecutor } from "./replay/executor.ts";
 import { loadPolicy, originOf } from "./safety/policy.ts";
 import { PlaywrightDriver } from "./surface/playwright/driver.ts";
@@ -33,11 +34,18 @@ Commands:
   replay                run a capability with no model (Task 08)
   operator              resume | status a HITL session (Task 09)
 
+Flags:
+  --confirm             allow irreversible replay steps
+  --auto-resume         tests only: write RESUME immediately
+  --operator-timeout N  seconds to wait for a human (default 0)
+  --session <id>        HITL session id for operator
+
 Examples:
   npm run cua -- help
   npm run cua -- serve
   npm run cua -- discover --goal "Look up savings balance" --input member_id=12345
   npm run cua -- replay capabilities/lookup_savings.json --input member_id=12345
+  npm run cua -- replay capabilities/open_subaccount.json --input member_id=12345 --input amount=25.00
   npm run cua -- operator resume --session <id>
 `);
 }
@@ -119,6 +127,8 @@ async function mainReplay(
     evidence?: string;
     headed?: boolean;
     confirm?: boolean;
+    "auto-resume"?: boolean;
+    "operator-timeout"?: string;
     "no-start-mock"?: boolean;
   },
 ): Promise<number> {
@@ -131,8 +141,12 @@ async function mainReplay(
   );
   const evidenceDir = resolve(values.evidence ?? join(ROOT, "evidence", "replay"));
   const policy = loadPolicy();
+  const timeoutSec = values["operator-timeout"] ? Number(values["operator-timeout"]) : 0;
   const closeMock = await ensureMock(artifact.app.entry_url, !values["no-start-mock"]);
-  const driver = new PlaywrightDriver({ headless: !values.headed, policy });
+  const driver = new PlaywrightDriver({
+    headless: !values.headed,
+    policy,
+  });
   await driver.start();
   try {
     const result = await new ReplayExecutor({
@@ -141,8 +155,15 @@ async function mainReplay(
       policy,
       confirmIrreversible: Boolean(values.confirm),
       evidenceDir,
+      autoResume: Boolean(values["auto-resume"]),
+      operatorTimeoutMs: Number.isFinite(timeoutSec) ? timeoutSec * 1000 : 0,
     }).run(parseInputs(values.input));
     console.log(JSON.stringify(result, null, 2));
+    if (result.status === "needs_intervention" && result.control?.session_id) {
+      console.error(
+        `HITL: npm run cua -- operator resume --session ${result.control.session_id}`,
+      );
+    }
     return result.status === "failed" ? 2 : 0;
   } finally {
     await driver.close();
@@ -166,6 +187,9 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
       evidence: { type: "string" },
       headed: { type: "boolean" },
       confirm: { type: "boolean" },
+      session: { type: "string" },
+      "auto-resume": { type: "boolean" },
+      "operator-timeout": { type: "string" },
       "no-start-mock": { type: "boolean" },
     },
   });
@@ -196,12 +220,41 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
   }
 
   if (command === "operator") {
-    console.error(`${command}: not implemented yet.`);
-    return 1;
+    return mainOperator(positionals[1], values.session);
   }
 
   console.error(`unknown command: ${command}`);
   printHelp();
+  return 1;
+}
+
+function mainOperator(sub: string | undefined, sessionId: string | undefined): number {
+  if (!sessionId) {
+    console.error("operator requires --session <id>");
+    return 1;
+  }
+  const session = SessionControl.load(sessionId);
+  if (sub === "status") {
+    console.log(
+      JSON.stringify(
+        {
+          session_id: session.session_id,
+          owner: session.owner,
+          reason: session.reason,
+          directory: session.directory,
+        },
+        null,
+        2,
+      ),
+    );
+    return 0;
+  }
+  if (sub === "resume") {
+    session.signalResume();
+    console.log(`wrote RESUME for session ${session.session_id}`);
+    return 0;
+  }
+  console.error("operator subcommand must be resume or status");
   return 1;
 }
 

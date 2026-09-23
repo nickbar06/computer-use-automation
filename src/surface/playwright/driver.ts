@@ -18,7 +18,7 @@ export type PlaywrightDriverOptions = {
 
 export class PlaywrightDriver implements SurfaceDriver {
   private readonly headless: boolean;
-  private readonly tracingDir?: string;
+  private tracingDir?: string;
   private readonly policy: Policy;
   private browser?: Browser;
   private context?: BrowserContext;
@@ -29,6 +29,10 @@ export class PlaywrightDriver implements SurfaceDriver {
     this.headless = options.headless ?? true;
     this.tracingDir = options.tracingDir;
     this.policy = options.policy ?? loadPolicy();
+  }
+
+  setTracingDir(dir: string): void {
+    this.tracingDir = dir;
   }
 
   async start(): Promise<void> {
@@ -159,6 +163,7 @@ export class PlaywrightDriver implements SurfaceDriver {
   }
 
   async pauseForHuman(): Promise<void> {
+    if (this.tracing) return;
     const context = this.requireContext();
     await context.tracing.start({ screenshots: true, snapshots: true });
     this.tracing = true;

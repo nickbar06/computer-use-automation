@@ -1,6 +1,7 @@
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { compileArtifact, type CompileTurn } from "../artifact/compile.ts";
+import { attachSessionToDriver, SessionControl } from "../escalate/control.ts";
 import type { CapabilityArtifact } from "../artifact/schema.ts";
 import type { LlmMessage, LlmProvider } from "../domain/llm.ts";
 import type { Observation, SurfaceDriver } from "../domain/surface.ts";
@@ -87,7 +88,18 @@ export class DiscoveryRunner {
           action: "stuck",
           reason: payload.reason,
         });
-        throw new Error(`discovery stuck: ${payload.reason ?? payload.thought ?? "model declared stuck"}`);
+        const session = SessionControl.create();
+        attachSessionToDriver(driver, session.directory);
+        await driver.pauseForHuman();
+        session.requestIntervention({
+          why: payload.reason ?? payload.thought ?? "model declared stuck",
+          location: observation.location,
+          observed: observation.visible_text,
+          screenshot_path: observation.screenshot_path,
+        });
+        throw new Error(
+          `discovery stuck: ${payload.reason ?? payload.thought ?? "model declared stuck"} (session ${session.session_id})`,
+        );
       }
 
       if (payload.action === "extract") {

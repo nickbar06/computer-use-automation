@@ -11,6 +11,8 @@ npm run cua -- serve
 # http://127.0.0.1:8765/  (frameset; Find Member in the workspace frame)
 npm run cua -- discover --goal "Look up savings balance" --input member_id=12345
 npm run cua -- replay capabilities/lookup_savings.json --input member_id=12345
+npm run cua -- replay capabilities/open_subaccount.json --input member_id=12345 --input amount=25.00
+npm run cua -- operator resume --session <id>
 npm test
 ```
 

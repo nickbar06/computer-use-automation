@@ -1,7 +1,8 @@
 ---
 id: "09"
 title: Human-in-the-loop session handoff
-status: todo
+status: done
+completed: 2026-09-23
 optional: false
 ---
 
@@ -63,9 +64,9 @@ Do not construct a second browser for the human. The web adapter must not call `
 
 ## Acceptance
 
-- [ ] `tests/control.test.ts` exists; `npm test` green
-- [ ] Unit test: requestIntervention → owner human; delayed signalResume → waitForResume true → owner agent
-- [ ] `src/escalate/` has no `playwright` import
-- [ ] Adapter/integration test or demo: open_subaccount without confirm writes `intervention.json` and leaves the live session alive until timeout or resume
-- [ ] Resume does not open a second browser/page for the operator
+- [x] `tests/control.test.ts` exists; `npm test` green
+- [x] Unit test: requestIntervention → owner human; delayed signalResume → waitForResume true → owner agent
+- [x] `src/escalate/` has no `playwright` import
+- [x] Adapter/integration test or demo: open_subaccount without confirm writes `intervention.json` and leaves the live session alive until timeout or resume
+- [x] Resume does not open a second browser/page for the operator
 

@@ -52,6 +52,7 @@ CoreLink is the **vendor product** (the mock). It is not a surface type and not 
          │
     HITL: SurfaceDriver.pauseForHuman / resume
     owner: agent → human → agent
+    files: sessions/<id>/{control.json,intervention.json,OPERATOR.txt,RESUME}
 ```
 
 ## Import rule
@@ -149,10 +150,10 @@ Left out on purpose: `hover`, `drag`, `scroll`, `download`, pixel clicks, raw CS
 | `src/llm/openai/` | HOW | official OpenAI SDK adapter |
 | `src/llm/anthropic/` | HOW | Anthropic adapter |
 | `src/replay/` | WHAT | LLM-free executor (calls the port) |
-| `src/escalate/` | WHAT | session owner + RESUME files |
-| `src/surface/playwright/` | HOW | only module that imports `playwright` |
+| `src/escalate/` | WHAT | `SessionControl` owner flip + `OPERATOR.txt` (no Playwright) |
+| `src/surface/playwright/` | HOW | only module that imports `playwright`; tracing zip on pause/resume |
 | `src/proxy/` | target app | hostile CoreLink mock |
-| `src/cli.ts` | compose | wires mock + PlaywrightDriver + discover/replay |
+| `src/cli.ts` | compose | wires mock + PlaywrightDriver + discover/replay/operator |
 
 ## Result contract
 
