@@ -38,6 +38,8 @@ Learn these before Task 00. The assignment grades the ideas, not the vocabulary.
 
 **Redaction** — strip secrets and raw PII from logs and artifacts. Parameter references (`$inputs.member_id`) stay; account numbers do not.
 
+**CanonicalAction** — the shared act vocabulary (`navigate`, `click`, `fill`, `press`, `extract`, `select`, `dismiss`, `wait`). Same strings on artifact steps, the policy allowlist, and `driver.act`. Not a Playwright API. Why this set: [ARCHITECTURE.md](ARCHITECTURE.md#why-these-canonicalaction-types).
+
 **SurfaceDriver** — the domain port: observe, act, extract, pause/resume. Core says *what*; an adapter says *how*. Playwright implements this; it is not the type replay or discovery take.
 
 **Observation** — what the core sees after an observe: `location`, title, accessibility snapshot, visible text, optional regions. Not a Playwright `Page`.

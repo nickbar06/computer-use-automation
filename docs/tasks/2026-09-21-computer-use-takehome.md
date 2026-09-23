@@ -57,8 +57,8 @@ Copy from ASSIGNMENT.md program checklist. Tick only when the slice spec Accepta
 - [x] 02 mock-core
 - [x] 03 artifact-schema
 - [x] 04 safety
-- [ ] 05 surface-driver
-- [ ] 05a llm-provider
+- [x] 05 surface-driver
+- [x] 05a llm-provider
 - [ ] 06 discovery-loop
 - [ ] 07 compile-artifact
 - [ ] 08 deterministic-replay
@@ -76,6 +76,14 @@ Maintain as slices land. Do not leave this table blank at close.
 
 | File | Change type | Notes |
 | ---- | ----------- | ----- |
+| `src/domain/llm.ts` | added | `LlmProvider` port (no vendor SDK) |
+| `src/llm/openai/provider.ts` | added | official `openai` adapter |
+| `src/llm/anthropic/provider.ts` | added | official Anthropic adapter |
+| `src/agent/nextAction.ts` | added | `LlmResponse` → `act` payload |
+| `src/domain/surface.ts` | added | `SurfaceDriver` port (no Playwright) |
+| `src/surface/playwright/driver.ts` | added | Playwright adapter |
+| `src/agent/actionFromLlm.ts` | added | `act` payload → `CanonicalAction` |
+| `scripts/driver-smoke.ts` | added | live extract `4250.00` |
 | `policies/default.json` | added | localhost:8765 allowlist + irreversible names |
 | `src/safety/policy.ts` | added | `checkNavigation` / `checkAction` / `isIrreversibleName` |
 | `src/safety/redact.ts` | added | account / SSN / secret redaction |
@@ -125,6 +133,33 @@ npm test
 ℹ pass 21
 ℹ fail 0
 ℹ duration_ms 123.27325
+```
+
+**Output** (Task 05 driver smoke):
+
+```text
+npx tsx scripts/driver-smoke.ts
+observe_ms=40.8
+location=http://127.0.0.1:55700/
+workspace=http://127.0.0.1:55700/lookup
+member_id_visible=true
+after_find=http://127.0.0.1:55700/
+savings=4250.00
+evil=SafetyError origin not allowed: https://evil.example
+after_evil=http://127.0.0.1:55700/
+stayed_off_evil=true
+```
+
+**Output** (Task 05a, no live HTTP):
+
+```text
+✔ FakeLlmProvider nextAction parses thought and action
+✔ resolveLlmProvider with empty env throws the missing-key message
+✔ resolveLlmProvider picks openai or anthropic from env without calling a host
+✔ src/agent and src/domain do not import vendor LLM SDKs
+ℹ tests 28
+ℹ pass 28
+ℹ fail 0
 ```
 
 Replay / discover output is still TBD until those slices.

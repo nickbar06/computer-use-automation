@@ -84,7 +84,7 @@ function replay(driver: SurfaceDriver, artifact: CapabilityArtifact): Promise<Ru
 
 ## Domain port (WHAT)
 
-These types must not mention Playwright. Prefer this shape when Task 03/05 land:
+These types must not mention Playwright.
 
 ```ts
 type Observation = {
@@ -118,7 +118,27 @@ interface SurfaceDriver {
 
 Locators in the artifact are named strategies (`role_name`, `table_cell`, …). The web adapter maps them to `getByRole` / table geometry. A desktop adapter would map the same strategies to OS accessibility.
 
-## Packages (to be created)
+### Why these `CanonicalAction` types
+
+They are the shared **WHAT** vocabulary — not a Playwright API list. The same eight strings appear on artifact steps, the policy allowlist, and `driver.act`. Discovery’s `act` tool is the same set minus `navigate` (the loop does that once up front) plus `done` / `stuck`.
+
+They cover CoreLink with a small, reviewable enum:
+
+| Action | Why it exists |
+| --- | --- |
+| `navigate` | Open the console. Policy can allowlist origin before any `goto`. |
+| `fill` | Type `$inputs.member_id` / amount. Parameterized, not baked into the artifact. |
+| `click` | Find Member, Open Sub-Account. |
+| `extract` | Read Savings × Balance. The assignment grades **outputs**, not just clicks. |
+| `dismiss` | Recoverable `System Notice` (click OK, continue). Separate from `click` so handlers are explicit. |
+| `wait` | Slow/timeout faults without a fake sleep in every adapter. |
+| `press` / `select` | Hostile forms (Enter, dropdowns) without adding a new action later. |
+
+Left out on purpose: `hover`, `drag`, `scroll`, `download`, pixel clicks, raw CSS as the contract. Those are HOW, or they wander off the allowlist (`download` is already rejected). A desktop adapter implements this same enum, not a new one.
+
+`done` / `stuck` never become `CanonicalAction` — they are loop control, not something a surface performs.
+
+## Packages
 
 | Path | Layer | Job |
 |---|---|---|

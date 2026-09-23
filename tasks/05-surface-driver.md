@@ -1,7 +1,8 @@
 ---
 id: "05"
 title: Playwright surface driver
-status: todo
+status: done
+completed: 2026-09-23
 optional: false
 ---
 
@@ -81,10 +82,10 @@ A throwaway is fine (delete later) or `npx tsx` snippet in comments: fill 12345,
 
 ## Acceptance
 
-- [ ] `src/domain/surface.ts` has no `playwright` import
-- [ ] Against the mock, resolve Member ID in the workspace frame (not the header frame)
-- [ ] Extract savings for 12345 → `4250.00`
-- [ ] Off-origin `navigate` throws `SafetyError` before `goto`
-- [ ] Observe on `/` returns in well under 2s (frameset skip works)
-- [ ] `npm test` still green (no new file required; Playwright replay tests wait for Task 11)
+- [x] `src/domain/surface.ts` has no `playwright` import
+- [x] Against the mock, resolve Member ID in the workspace frame (not the header frame)
+- [x] Extract savings for 12345 → `4250.00`
+- [x] Off-origin `navigate` throws `SafetyError` before `goto`
+- [x] Observe on `/` returns in well under 2s (frameset skip works)
+- [x] `npm test` still green (no new file required; Playwright replay tests wait for Task 11)
 

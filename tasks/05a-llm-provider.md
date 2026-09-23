@@ -1,7 +1,8 @@
 ---
 id: "05a"
 title: LLM provider port
-status: todo
+status: done
+completed: 2026-09-23
 optional: false
 ---
 
@@ -84,10 +85,10 @@ Placeholders only. Do not commit real keys.
 
 ## Acceptance
 
-- [ ] `openai` is a dependency; only `src/llm/openai/` imports it
-- [ ] `src/domain/llm.ts` and `src/agent/nextAction.ts` have no vendor SDK imports
-- [ ] `resolveLlmProvider()` throws clearly without keys
-- [ ] `tests/llm.test.ts` passes with a fake provider
-- [ ] `.env.example` lists `LLM_PROVIDER` + existing key placeholders
-- [ ] `npm test` green
+- [x] `openai` is a dependency; only `src/llm/openai/` imports it
+- [x] `src/domain/llm.ts` and `src/agent/nextAction.ts` have no vendor SDK imports
+- [x] `resolveLlmProvider()` throws clearly without keys
+- [x] `tests/llm.test.ts` passes with a fake provider
+- [x] `.env.example` lists `LLM_PROVIDER` + existing key placeholders
+- [x] `npm test` green
 
