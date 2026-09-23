@@ -19,7 +19,7 @@ import { loadPolicy, originOf } from "./safety/policy.ts";
 import { dumpsRedacted, redactText } from "./safety/redact.ts";
 import { PlaywrightDriver } from "./surface/playwright/driver.ts";
 
-export const CLI_HELP = `cua — computer-use automation
+export const CLI_HELP = `cua: computer-use automation
 
 Commands:
   serve [--port 8765] [--host 127.0.0.1]

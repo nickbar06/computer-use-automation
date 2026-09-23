@@ -9,3 +9,4 @@ capabilities/discovered.json
 .DS_Store
 coverage/
 *.trace.zip
+README.interview.md

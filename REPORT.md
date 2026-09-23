@@ -71,7 +71,7 @@ ReplayExecutor({ driver, artifact })
   // driver matches artifact.app.surface_kind
 ```
 
-One process is the weekend-sized choice. HITL is a file poll (`RESUME`) against the still-open headed window. The trade-off is real: there is no `DesktopDriver` in this repo, and no operator console.
+HITL is a file poll (`RESUME`) against the still-open headed window. There is no `DesktopDriver` in this repo, and no operator console.
 
 # Artifact schema
 
@@ -115,7 +115,7 @@ type RunStatus = "success" | "business_outcome" | "needs_intervention" | "failed
 
 # Heterogeneity & multi-tenant
 
-**Surface seam.** The artifact stores **what** to do and **which control**. A `SurfaceDriver` is **how** one frontend perceives and acts. Types, callers, and the **driver class split** (`PlaywrightDriver` / `ModernWebDriver` / `DesktopDriver`) are in [Architecture](#driver-classes-same-capability-different-how) and [`src/domain/surface.ts`](src/domain/surface.ts). This mock is `legacy_web`. A modern `web` app would reuse or subclass `PlaywrightDriver`. A desktop core would ship `DesktopDriver` — same capability JSON, different class. `Observation.location` is a string (a URL here; a window id on desktop), not a Playwright URL object.
+**Surface seam.** Types and the driver class split (`PlaywrightDriver` / `ModernWebDriver` / `DesktopDriver`) are in [Architecture](#driver-classes-same-capability-different-how) and [`src/domain/surface.ts`](src/domain/surface.ts). This mock is `legacy_web`. A desktop core would ship `DesktopDriver`: same capability JSON, different class. `Observation.location` is a string (a URL here; a window id on desktop), not a Playwright URL object.
 
 ```ts
 // src/domain/surface.ts
@@ -127,7 +127,7 @@ export type Observation = {
 };
 ```
 
-**Reuse / drift.** Artifacts key on vendor product + surface kind, not bank name. We did not record one artifact per institution. Label and emoji drift is a tenant overlay on locator **ids** (`find_member`), applied at replay (`--overlay` in [`src/cli.ts`](src/cli.ts) via `applyOverlay`). Locator ids stay stable; strategies change. That is overlay, not re-record: the same `lookup_savings` steps run; only the name strategies are patched.
+**Reuse / drift.** Artifacts key on vendor product + surface kind, not bank name. Label and emoji drift is a tenant overlay on locator **ids** (`find_member`), applied at replay (`--overlay` in [`src/cli.ts`](src/cli.ts) via `applyOverlay`). Locator ids stay stable; strategies change. The same `lookup_savings` steps run; only the name strategies are patched.
 
 ```json
 // capabilities/overlays/northlake.json
@@ -143,9 +143,9 @@ export type Observation = {
 }
 ```
 
-Runtime proof ([`tests/overlay.test.ts`](tests/overlay.test.ts)): the Riverside artifact against the Northlake skin (`?tenant=northlake`) cannot resolve `Find Member`. Replay returns `failed` / HITL — it does **not** click `Search Member` by accident or report a wrong-page success. The same artifact plus `northlake.json` extracts `4250.00`. Lakecrest plus `lakecrest.json` does the same for `🔍 Search`. Unknown drift (no overlay) fails the locator or checkpoint and escalates. There is no tenant database and no silent fallback to the first button on the page. Flow change (a new confirm page, a new irreversible step) is a new artifact version, not an overlay.
+Runtime proof ([`tests/overlay.test.ts`](tests/overlay.test.ts)): the Riverside artifact against the Northlake skin (`?tenant=northlake`) cannot resolve `Find Member`. Replay returns `failed` / HITL. It does not click `Search Member` by accident or report a wrong-page success. The same artifact plus `northlake.json` extracts `4250.00`. Lakecrest plus `lakecrest.json` does the same for `🔍 Search`. Unknown drift (no overlay) fails the locator or checkpoint and escalates. Flow change (a new confirm page, a new irreversible step) is a new artifact version, not an overlay.
 
-URL examples in a path are canonicalized at compile (`/member/12345` → `/member/:member_id` in [`src/artifact/canonicalize.ts`](src/artifact/canonicalize.ts)). Replay binds `:member_id` from `$inputs`. Same reuse idea as overlays: keep the contract, parameterize the member- or tenant-specific bits.
+URL examples in a path are canonicalized at compile (`/member/12345` → `/member/:member_id` in [`src/artifact/canonicalize.ts`](src/artifact/canonicalize.ts)). Replay binds `:member_id` from `$inputs`.
 
 # Escalation & handoff
 
@@ -161,6 +161,6 @@ Logs go through [`src/safety/redact.ts`](src/safety/redact.ts): long digit runs,
 
 # Cuts
 
-Not built, on purpose: desktop adapter, pretty operator console, queues/workers, capability catalog, codegen, approval state machines, LLM recovery on replay, multi-run stability, public-site demos, a tenant database.
+Not built, on purpose: desktop adapter, pretty operator console, queues/workers, capability catalog, codegen, approval state machines, LLM recovery on replay, multi-run stability, a tenant database.
 
-`--overlay` and Task 13 are done: Northlake without overlay fails the locator; Northlake / Lakecrest with overlay succeed. Next work, if any, is another `SurfaceDriver` implementation — not a platform.
+`--overlay` is done: Northlake without overlay fails the locator; Northlake / Lakecrest with overlay succeed. Next work, if any, is another `SurfaceDriver` implementation, not a platform.
