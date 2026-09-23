@@ -1,7 +1,8 @@
 ---
 id: "04"
 title: Safety allowlist and redaction
-status: todo
+status: done
+completed: 2026-09-23
 optional: false
 ---
 
@@ -60,9 +61,9 @@ Apply `dumpsRedacted` to anything written under `evidence/` or `sessions/`.
 
 ## Acceptance
 
-- [ ] `tests/safety.test.ts` exists; `npm test` green
-- [ ] `loadPolicy()` reads `policies/default.json` from `ROOT`
-- [ ] Tests above pass
-- [ ] `src/safety/` has no `playwright` import
-- [ ] Driver/replay tasks call these functions **before** `act` / navigate on irreversible names
+- [x] `tests/safety.test.ts` exists; `npm test` green
+- [x] `loadPolicy()` reads `policies/default.json` from `ROOT`
+- [x] Tests above pass
+- [x] `src/safety/` has no `playwright` import
+- [x] Driver/replay tasks call these functions **before** `act` / navigate on irreversible names
 

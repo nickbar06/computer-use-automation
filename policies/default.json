@@ -1,0 +1,13 @@
+{
+  "policy_id": "default",
+  "allowed_origins": ["http://127.0.0.1:8765", "http://localhost:8765"],
+  "allowed_actions": ["navigate", "click", "fill", "press", "extract", "select", "dismiss", "wait"],
+  "irreversible_name_substrings": [
+    "open sub-account",
+    "open account",
+    "submit opening",
+    "confirm transfer",
+    "post transaction"
+  ],
+  "redaction_profile": "financial_pii"
+}

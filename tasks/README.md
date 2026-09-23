@@ -40,7 +40,7 @@ Each implementation slice **adds** its tests and must leave `npm test` green. Do
 - [x] [01-scaffold](01-scaffold.md)
 - [x] [02-mock-core](02-mock-core.md)
 - [x] [03-artifact-schema](03-artifact-schema.md)
-- [ ] [04-safety](04-safety.md)
+- [x] [04-safety](04-safety.md)
 - [ ] [05-surface-driver](05-surface-driver.md)
 - [ ] [05a-llm-provider](05a-llm-provider.md)
 - [ ] [06-discovery-loop](06-discovery-loop.md)
