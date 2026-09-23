@@ -90,6 +90,13 @@ test("discovery loop fills, clicks, extracts, and stops on done", async () => {
     assert.match(jsonl, /password=\[REDACTED\]/);
     assert.doesNotMatch(jsonl, /shouldredact/);
     assert.match(jsonl, /"action":"fill"/);
+
+    assert.ok(result.artifact);
+    const fill = result.artifact.steps.find((step) => step.action === "fill");
+    assert.equal(fill?.input_from, "$inputs.member_id");
+    const written = readFileSync(join(dir, "artifact.json"), "utf8");
+    assert.match(written, /\$inputs\.member_id/);
+    assert.doesNotMatch(written, /from ["']playwright["']/);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

@@ -1,7 +1,8 @@
 ---
 id: "07"
 title: Compile transcript into a capability
-status: todo
+status: done
+completed: 2026-09-23
 optional: false
 ---
 
@@ -40,10 +41,10 @@ Extend `tests/schema.test.ts` (or add `tests/compile.test.ts`):
 
 ## Acceptance
 
-- [ ] Compile assertions above pass under `npm test`
-- [ ] Given a fill of `"12345"` with `inputs.member_id=12345`, the compiled step uses `$inputs.member_id`
-- [ ] Compiled JSON parses with `capabilityArtifactSchema`
-- [ ] `reviewSummary(artifact)` prints inputs/outputs/step counts
-- [ ] Discovery runner writes `evidence/artifact.json` via `dumpsRedacted`
-- [ ] `src/artifact/compile.ts` has no `playwright` import
+- [x] Compile assertions above pass under `npm test`
+- [x] Given a fill of `"12345"` with `inputs.member_id=12345`, the compiled step uses `$inputs.member_id`
+- [x] Compiled JSON parses with `capabilityArtifactSchema`
+- [x] `reviewSummary(artifact)` prints inputs/outputs/step counts
+- [x] Discovery runner writes `evidence/artifact.json` via `dumpsRedacted`
+- [x] `src/artifact/compile.ts` has no `playwright` import
 

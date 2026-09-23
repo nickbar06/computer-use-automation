@@ -60,7 +60,7 @@ Copy from ASSIGNMENT.md program checklist. Tick only when the slice spec Accepta
 - [x] 05 surface-driver
 - [x] 05a llm-provider
 - [x] 06 discovery-loop
-- [ ] 07 compile-artifact
+- [x] 07 compile-artifact
 - [ ] 08 deterministic-replay
 - [ ] 09 hitl
 - [ ] 10 cli
@@ -76,6 +76,7 @@ Maintain as slices land. Do not leave this table blank at close.
 
 | File | Change type | Notes |
 | ---- | ----------- | ----- |
+| `src/artifact/compile.ts` | added | transcript → capability (`$inputs.member_id`) |
 | `src/agent/loop.ts` | added | `DiscoveryRunner` (SurfaceDriver + LlmProvider) |
 | `evidence/discovery/` | added | live lookup JSONL + screenshots |
 | `src/domain/llm.ts` | added | `LlmProvider` port (no vendor SDK) |
@@ -175,6 +176,20 @@ evidence=.../evidence/discovery
 ```
 
 JSONL (redacted thoughts; no API keys): fill Member ID → click Find Member → extract Savings/Balance `4250.00` → done `Member Snapshot`.
+
+**Output** (Task 07 compile):
+
+```text
+id: discovered
+vendor_product: corelink.servicing
+surface_kind: legacy_web
+inputs: member_id
+outputs: savings_balance
+steps: 5
+irreversible_steps: (none)
+```
+
+Fill step uses `$inputs.member_id` (no baked member id). Written to `evidence/discovery/artifact.json`.
 
 Replay output is still TBD until Task 08.
 

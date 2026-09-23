@@ -1,8 +1,10 @@
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { compileArtifact, type CompileTurn } from "../artifact/compile.ts";
+import type { CapabilityArtifact } from "../artifact/schema.ts";
 import type { LlmMessage, LlmProvider } from "../domain/llm.ts";
 import type { Observation, SurfaceDriver } from "../domain/surface.ts";
-import { appendRedactedJsonl, redactText } from "../safety/redact.ts";
+import { appendRedactedJsonl, dumpsRedacted, redactText } from "../safety/redact.ts";
 import { checkNavigation, isIrreversibleName, type Policy } from "../safety/policy.ts";
 import { actionFromLlm, type ActPayload } from "./actionFromLlm.ts";
 import { nextAction } from "./nextAction.ts";
@@ -20,6 +22,7 @@ export type DiscoveryResult = {
   turns: DiscoveryTurn[];
   stop: "done" | "max_steps" | "timeout";
   outputs: Record<string, string>;
+  artifact?: CapabilityArtifact;
 };
 
 export type DiscoveryRunnerOptions = {
@@ -74,7 +77,8 @@ export class DiscoveryRunner {
         const turn = { step, payload, irreversible, observation };
         turns.push(turn);
         appendRedactedJsonl(logPath, jsonlRecord(turn));
-        return { turns, stop: "done", outputs };
+        const artifact = persistArtifact(turns, outputs, this.options);
+        return { turns, stop: "done", outputs, artifact };
       }
       if (payload.action === "stuck") {
         appendRedactedJsonl(logPath, {
@@ -104,6 +108,47 @@ export class DiscoveryRunner {
 
     return { turns, stop: "max_steps", outputs };
   }
+}
+
+function persistArtifact(
+  turns: DiscoveryTurn[],
+  outputs: Record<string, string>,
+  options: DiscoveryRunnerOptions,
+): CapabilityArtifact {
+  const artifact = compileArtifact({
+    artifactId: "discovered",
+    name: options.goal,
+    description: options.goal,
+    goal: options.goal,
+    entryUrl: options.target,
+    inputs: options.inputs,
+    turns: turns.map(toCompileTurn),
+    policy: options.policy,
+  });
+  for (const [key, value] of Object.entries(outputs)) {
+    const output = artifact.contract.outputs.find((item) => item.name === key);
+    if (output) output.example = value;
+  }
+  dumpsRedacted(join(options.evidenceDir, "artifact.json"), `${JSON.stringify(artifact, null, 2)}\n`);
+  return artifact;
+}
+
+function toCompileTurn(turn: DiscoveryTurn): CompileTurn {
+  const { payload } = turn;
+  return {
+    action: payload.action,
+    thought: payload.thought,
+    role: payload.role,
+    name: payload.name,
+    text: payload.text,
+    key: payload.key,
+    extract_to: payload.extract_to,
+    row_header: payload.row_header,
+    column_header: payload.column_header,
+    risk: payload.risk,
+    irreversible: turn.irreversible,
+    extracted: turn.extracted,
+  };
 }
 
 function bindFill(payload: ActPayload, inputs: Record<string, string>): ActPayload {

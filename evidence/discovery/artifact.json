@@ -1,0 +1,208 @@
+{
+  "schema_version": "1.0",
+  "id": "discovered",
+  "name": "Look up the savings balance for the member in inputs",
+  "description": "Look up the savings balance for the member in inputs",
+  "version": "1.0.0",
+  "app": {
+    "vendor_product": "corelink.servicing",
+    "surface_kind": "legacy_web",
+    "entry_url": "http://127.0.0.1:8765/",
+    "entry_url_template": "/"
+  },
+  "contract": {
+    "inputs": [
+      {
+        "name": "member_id",
+        "type": "string",
+        "description": "member_id",
+        "required": true,
+        "example": "12345"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "savings_balance",
+        "type": "money",
+        "description": "Extract savings",
+        "required": true,
+        "example": "4250.00"
+      }
+    ],
+    "business_outcomes": [
+      "MEMBER_NOT_FOUND",
+      "PERMISSION_DENIED",
+      "VALIDATION_ERROR"
+    ]
+  },
+  "locators": {
+    "notice_ok": {
+      "name": "System notice OK",
+      "description": "Dismiss the recoverable System Notice interstitial",
+      "strategies": [
+        {
+          "kind": "role_name",
+          "role": "button",
+          "name": "OK"
+        }
+      ]
+    },
+    "member_id": {
+      "name": "Member ID",
+      "description": "Fill in the member ID",
+      "strategies": [
+        {
+          "kind": "role_name",
+          "role": "textbox",
+          "name": "Member ID"
+        },
+        {
+          "kind": "accessible_name",
+          "name": "Member ID"
+        }
+      ]
+    },
+    "find_member": {
+      "name": "Find Member",
+      "description": "Click Find Member",
+      "strategies": [
+        {
+          "kind": "role_name",
+          "role": "button",
+          "name": "Find Member"
+        },
+        {
+          "kind": "accessible_name",
+          "name": "Find Member"
+        },
+        {
+          "kind": "text",
+          "text": "Find Member"
+        }
+      ]
+    },
+    "savings_balance": {
+      "name": "savings_balance",
+      "description": "Extract savings",
+      "strategies": [
+        {
+          "kind": "table_cell",
+          "row_header": "Savings",
+          "column_header": "Balance"
+        }
+      ]
+    }
+  },
+  "steps": [
+    {
+      "id": "s00_open",
+      "description": "Open the application",
+      "action": "navigate",
+      "value": "/",
+      "risk": "safe"
+    },
+    {
+      "id": "s01",
+      "description": "Fill in the member ID",
+      "action": "fill",
+      "target": "member_id",
+      "input_from": "$inputs.member_id",
+      "risk": "safe"
+    },
+    {
+      "id": "s02",
+      "description": "Click Find Member",
+      "action": "click",
+      "target": "find_member",
+      "risk": "safe"
+    },
+    {
+      "id": "s03",
+      "description": "Extract savings",
+      "action": "extract",
+      "target": "savings_balance",
+      "extract_to": "savings_balance",
+      "risk": "safe"
+    },
+    {
+      "id": "s04",
+      "description": "Extract savings again",
+      "action": "extract",
+      "target": "savings_balance",
+      "extract_to": "savings_balance",
+      "risk": "safe"
+    }
+  ],
+  "handlers": [
+    {
+      "when": {
+        "kind": "text_present",
+        "text": "No matching member"
+      },
+      "outcome": "business_outcome",
+      "code": "MEMBER_NOT_FOUND"
+    },
+    {
+      "when": {
+        "kind": "text_present",
+        "text": "Access denied"
+      },
+      "outcome": "business_outcome",
+      "code": "PERMISSION_DENIED"
+    },
+    {
+      "when": {
+        "kind": "text_present",
+        "text": "Member ID is required."
+      },
+      "outcome": "business_outcome",
+      "code": "VALIDATION_ERROR"
+    },
+    {
+      "when": {
+        "kind": "text_present",
+        "text": "System Notice"
+      },
+      "outcome": "recoverable",
+      "code": "SYSTEM_NOTICE",
+      "recover_step": {
+        "id": "r_notice_ok",
+        "description": "Dismiss System Notice",
+        "action": "click",
+        "target": "notice_ok",
+        "risk": "safe"
+      }
+    },
+    {
+      "when": {
+        "kind": "text_present",
+        "text": "Session expired"
+      },
+      "outcome": "hard_failure",
+      "code": "SESSION_EXPIRED"
+    }
+  ],
+  "checkpoints": [
+    {
+      "kind": "text_present",
+      "text": "Member Snapshot"
+    }
+  ],
+  "safety": {
+    "allowed_origins": [
+      "http://127.0.0.1:8765",
+      "http://localhost:8765"
+    ],
+    "allowed_actions": [
+      "navigate",
+      "click",
+      "fill",
+      "press",
+      "extract",
+      "select",
+      "dismiss",
+      "wait"
+    ],
+    "irreversible_steps": []
+  }
+}

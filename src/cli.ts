@@ -3,6 +3,7 @@ import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 import { DiscoveryRunner } from "./agent/loop.ts";
+import { reviewSummary } from "./artifact/schema.ts";
 import { resolveLlmProvider } from "./llm/resolve.ts";
 import { DEFAULT_ORIGIN, DEFAULT_PORT, ROOT } from "./paths.ts";
 import { listenMock, mainServe } from "./proxy/server.ts";
@@ -100,6 +101,9 @@ async function mainDiscover(values: {
       console.log(`outputs.${key}=${value}`);
     }
     console.log(`evidence=${evidenceDir}`);
+    if (result.artifact) {
+      console.log(reviewSummary(result.artifact));
+    }
     return result.stop === "done" ? 0 : 1;
   } finally {
     await driver.close();
