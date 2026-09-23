@@ -59,7 +59,7 @@ Copy from ASSIGNMENT.md program checklist. Tick only when the slice spec Accepta
 - [x] 04 safety
 - [x] 05 surface-driver
 - [x] 05a llm-provider
-- [ ] 06 discovery-loop
+- [x] 06 discovery-loop
 - [ ] 07 compile-artifact
 - [ ] 08 deterministic-replay
 - [ ] 09 hitl
@@ -76,6 +76,8 @@ Maintain as slices land. Do not leave this table blank at close.
 
 | File | Change type | Notes |
 | ---- | ----------- | ----- |
+| `src/agent/loop.ts` | added | `DiscoveryRunner` (SurfaceDriver + LlmProvider) |
+| `evidence/discovery/` | added | live lookup JSONL + screenshots |
 | `src/domain/llm.ts` | added | `LlmProvider` port (no vendor SDK) |
 | `src/llm/openai/provider.ts` | added | official `openai` adapter |
 | `src/llm/anthropic/provider.ts` | added | official Anthropic adapter |
@@ -162,7 +164,19 @@ stayed_off_evil=true
 ℹ fail 0
 ```
 
-Replay / discover output is still TBD until those slices.
+**Output** (Task 06 live discover):
+
+```text
+npm run cua -- discover --goal "Look up the savings balance for the member in inputs" --input member_id=12345 --evidence evidence/discovery
+stop=done
+steps=5
+outputs.savings_balance=4250.00
+evidence=.../evidence/discovery
+```
+
+JSONL (redacted thoughts; no API keys): fill Member ID → click Find Member → extract Savings/Balance `4250.00` → done `Member Snapshot`.
+
+Replay output is still TBD until Task 08.
 
 Paste discover, replay success, replay not-found, and escalate (or point at `evidence/*` **and** quote `result.json` status fields).
 

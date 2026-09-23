@@ -43,7 +43,7 @@ Each implementation slice **adds** its tests and must leave `npm test` green. Do
 - [x] [04-safety](04-safety.md)
 - [x] [05-surface-driver](05-surface-driver.md)
 - [x] [05a-llm-provider](05a-llm-provider.md)
-- [ ] [06-discovery-loop](06-discovery-loop.md)
+- [x] [06-discovery-loop](06-discovery-loop.md)
 - [ ] [07-compile-artifact](07-compile-artifact.md)
 - [ ] [08-deterministic-replay](08-deterministic-replay.md)
 - [ ] [09-hitl](09-hitl.md)

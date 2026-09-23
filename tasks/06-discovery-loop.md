@@ -1,7 +1,8 @@
 ---
 id: "06"
 title: Discovery agent loop
-status: todo
+status: done
+completed: 2026-09-23
 optional: false
 ---
 
@@ -54,10 +55,10 @@ Optional: `role`, `name`, `text`, `key`, `extract_to`, `row_header`, `column_hea
 
 ## Acceptance
 
-- [ ] `src/agent/` has no `playwright` import; constructor is `SurfaceDriver`, not `Page`
-- [ ] `src/agent/` has no `openai` import; loop calls `LlmProvider.complete`, not `OpenAI`
-- [ ] Without API keys, `resolveLlmProvider()` / `nextAction` throws a clear “set OPENAI_API_KEY or ANTHROPIC_API_KEY”
-- [ ] With a key, one run of the lookup goal against the mock reaches `done` or you document the exact failure in the task file as `blocked`
-- [ ] JSONL thoughts do not contain raw `password=` values (redaction ran)
-- [ ] `npm test` still green
+- [x] `src/agent/` has no `playwright` import; constructor is `SurfaceDriver`, not `Page`
+- [x] `src/agent/` has no `openai` import; loop calls `LlmProvider.complete`, not `OpenAI`
+- [x] Without API keys, `resolveLlmProvider()` / `nextAction` throws a clear “set OPENAI_API_KEY or ANTHROPIC_API_KEY”
+- [x] With a key, one run of the lookup goal against the mock reaches `done` or you document the exact failure in the task file as `blocked`
+- [x] JSONL thoughts do not contain raw `password=` values (redaction ran)
+- [x] `npm test` still green
 

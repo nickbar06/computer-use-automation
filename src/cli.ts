@@ -2,8 +2,12 @@ import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
-import { DEFAULT_PORT, ROOT } from "./paths.ts";
-import { mainServe } from "./proxy/server.ts";
+import { DiscoveryRunner } from "./agent/loop.ts";
+import { resolveLlmProvider } from "./llm/resolve.ts";
+import { DEFAULT_ORIGIN, DEFAULT_PORT, ROOT } from "./paths.ts";
+import { listenMock, mainServe } from "./proxy/server.ts";
+import { loadPolicy, originOf } from "./safety/policy.ts";
+import { PlaywrightDriver } from "./surface/playwright/driver.ts";
 
 function loadEnv(filePath: string): void {
   if (!existsSync(filePath)) return;
@@ -30,10 +34,77 @@ Commands:
 Examples:
   npm run cua -- help
   npm run cua -- serve
-  npm run cua -- discover --goal "..." --input member_id=12345
+  npm run cua -- discover --goal "Look up savings balance" --input member_id=12345
   npm run cua -- replay capabilities/lookup_savings.json --input member_id=12345
   npm run cua -- operator resume --session <id>
 `);
+}
+
+function parseInputs(items: string[] | undefined): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const item of items ?? []) {
+    const eq = item.indexOf("=");
+    if (eq === -1) throw new Error(`invalid --input ${item} (expected key=value)`);
+    out[item.slice(0, eq)] = item.slice(eq + 1);
+  }
+  return out;
+}
+
+async function ensureMock(target: string, startMock: boolean): Promise<() => Promise<void>> {
+  if (!startMock) return async () => {};
+  const origin = originOf(target);
+  if (!/127\.0\.0\.1|localhost/.test(origin)) return async () => {};
+  try {
+    const res = await fetch(`${origin}/health`);
+    if (res.ok) return async () => {};
+  } catch {
+    // start a mock
+  }
+  const url = new URL(origin);
+  const port = url.port ? Number(url.port) : DEFAULT_PORT;
+  const { close } = await listenMock(port, url.hostname);
+  return close;
+}
+
+async function mainDiscover(values: {
+  goal?: string;
+  input?: string[];
+  target?: string;
+  evidence?: string;
+  headed?: boolean;
+  "no-start-mock"?: boolean;
+}): Promise<number> {
+  if (!values.goal) {
+    console.error("discover requires --goal");
+    return 1;
+  }
+  const target = values.target ?? `${DEFAULT_ORIGIN}/`;
+  const evidenceDir = resolve(values.evidence ?? join(ROOT, "evidence", "discovery"));
+  const policy = loadPolicy();
+  const closeMock = await ensureMock(target, !values["no-start-mock"]);
+  const driver = new PlaywrightDriver({ headless: !values.headed, policy });
+  await driver.start();
+  try {
+    const result = await new DiscoveryRunner({
+      driver,
+      llm: resolveLlmProvider(),
+      policy,
+      goal: values.goal,
+      inputs: parseInputs(values.input),
+      target,
+      evidenceDir,
+    }).run();
+    console.log(`stop=${result.stop}`);
+    console.log(`steps=${result.turns.length}`);
+    for (const [key, value] of Object.entries(result.outputs)) {
+      console.log(`outputs.${key}=${value}`);
+    }
+    console.log(`evidence=${evidenceDir}`);
+    return result.stop === "done" ? 0 : 1;
+  } finally {
+    await driver.close();
+    await closeMock();
+  }
 }
 
 export async function main(argv = process.argv.slice(2)): Promise<number> {
@@ -46,6 +117,12 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
       help: { type: "boolean", short: "h" },
       port: { type: "string" },
       host: { type: "string" },
+      goal: { type: "string" },
+      input: { type: "string", multiple: true },
+      target: { type: "string" },
+      evidence: { type: "string" },
+      headed: { type: "boolean" },
+      "no-start-mock": { type: "boolean" },
     },
   });
 
@@ -66,7 +143,11 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
     return 0;
   }
 
-  if (command === "discover" || command === "replay" || command === "operator") {
+  if (command === "discover") {
+    return mainDiscover(values);
+  }
+
+  if (command === "replay" || command === "operator") {
     console.error(`${command}: not implemented yet.`);
     return 1;
   }
