@@ -3,7 +3,7 @@
 **Date**: 2026-09-23  
 **Status**: Accepted  
 **Deciders**: implementer (preserve assignment §3.7 seam)  
-**Slice**: [05](../../../tasks/05-surface-driver/README.md), [06](../../../tasks/06-discovery-loop/README.md), [08](../../../tasks/08-deterministic-replay/README.md), [09](../../../tasks/09-hitl/README.md)
+**Slice**: [05](../../../tasks/05-surface-driver.md), [06](../../../tasks/06-discovery-loop.md), [08](../../../tasks/08-deterministic-replay.md), [09](../../../tasks/09-hitl.md)
 
 ## Context
 

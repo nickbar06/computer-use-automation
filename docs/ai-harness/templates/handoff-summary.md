@@ -1,7 +1,7 @@
 # Handoff Summary: [TITLE]
 
 **Date**: YYYY-MM-DD
-**Task folder**: `tasks/NN-name/`
+**Task spec**: `tasks/NN-name.md`
 
 ## What Was Done
 

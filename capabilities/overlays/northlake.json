@@ -1,0 +1,14 @@
+{
+  "tenant_id": "northlake",
+  "vendor_product": "corelink.servicing",
+  "locators": {
+    "find_member": {
+      "name": "Search Member",
+      "description": "Northlake label for the lookup submit control",
+      "strategies": [
+        { "kind": "role_name", "role": "button", "name": "Search Member" },
+        { "kind": "text", "text": "Search Member" }
+      ]
+    }
+  }
+}

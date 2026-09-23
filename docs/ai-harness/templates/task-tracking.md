@@ -2,7 +2,7 @@
 
 **Date**: YYYY-MM-DD
 **Status**: todo | in_progress | blocked | done
-**Spec**: `tasks/NN-name/README.md`
+**Spec**: `tasks/NN-name.md`
 
 ---
 > **BEFORE CLOSING:** Scan for `TBD`, `Not started`, `Pending`, example rows, or blank required tables.
@@ -12,7 +12,7 @@
 
 ## Original Request
 
-Implement the spec in this folder’s `README.md`.
+Implement the spec in `tasks/NN-name.md`.
 
 ## Restated Goal
 
@@ -43,8 +43,7 @@ Fill this in **before** coding if the task touches more than two files.
 
 ## Progress Checklist
 
-- [ ] Spec README read (`README.md` in this folder)
-- [ ] Lesson questions answered (`LESSON.md`)
+- [ ] Spec read (`tasks/NN-name.md`)
 - [ ] Implementation plan written (if non-trivial)
 - [ ] Implementation complete
 - [ ] Spec Acceptance checkboxes ticked

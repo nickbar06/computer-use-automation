@@ -3,7 +3,7 @@
 **Date**: 2026-09-21  
 **Status**: Accepted  
 **Deciders**: assignment §3.6 (same live session; console out of scope)  
-**Slice**: [tasks/09-hitl](../../../tasks/09-hitl/README.md)
+**Slice**: [tasks/09-hitl](../../../tasks/09-hitl.md)
 
 ## Context
 

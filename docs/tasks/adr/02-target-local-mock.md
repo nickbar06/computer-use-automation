@@ -3,7 +3,7 @@
 **Date**: 2026-09-21  
 **Status**: Accepted  
 **Deciders**: scoping (weekend + domain fit)  
-**Slice**: [tasks/02-mock-core](../../../tasks/02-mock-core/README.md)
+**Slice**: [tasks/02-mock-core](../../../tasks/02-mock-core.md)
 
 ## Context
 

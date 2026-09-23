@@ -9,20 +9,19 @@ Read in this order the first time:
 | 3 | [GLOSSARY.md](GLOSSARY.md) | Words used in every task file |
 | 4 | [ARCHITECTURE.md](ARCHITECTURE.md) | How the pieces fit |
 | 5 | [LEARN.md](LEARN.md) | Videos and sites if a concept is new |
-| 6 | [LESSON.md](LESSON.md) | Index of per-task lessons |
-| 7 | [../AGENTS.md](../AGENTS.md) | How the coding agent must track and close work |
+| 6 | [LESSON.md](LESSON.md) | What the take-home is teaching |
+| 7 | [../AGENTS.md](../AGENTS.md) | How the coding agent must close work |
 
-Then go to [../tasks/README.md](../tasks/README.md) and start [Task 00](../tasks/00-orientation/README.md).
+Then go to [../tasks/README.md](../tasks/README.md) and start [Task 00](../tasks/00-orientation.md).
 
 ## Task harness
 
 Work is tracked the way a disciplined agent harness tracks it:
 
-- Spec stays in `tasks/NN-name/README.md`
-- Execution evidence lives in `tasks/NN-name/TRACKING.md` (plan, files, pasted validation, handoff)
-- Templates: [ai-harness/templates/](ai-harness/templates/)
+- Spec stays in `tasks/NN-name.md`
 - Program tracking: [docs/tasks/2026-09-21-computer-use-takehome.md](docs/tasks/2026-09-21-computer-use-takehome.md)
+- Templates: [ai-harness/templates/](ai-harness/templates/)
 
-`TBD` in a tracking file’s Validation Run or Handoff means that task is **not** done, even if code exists.
+`TBD` in the program tracking file’s Validation Run or Handoff means that work is **not** done, even if code exists.
 
-When you are lost mid-build, open that task’s `LESSON.md`, not the assignment PDF.
+When you are lost mid-build, open that task’s spec in `tasks/`, not the assignment PDF.

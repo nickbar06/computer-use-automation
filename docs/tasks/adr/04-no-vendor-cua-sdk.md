@@ -3,7 +3,7 @@
 **Date**: 2026-09-21  
 **Status**: Accepted  
 **Deciders**: scoping (schema is the evaluation center)  
-**Slice**: [tasks/06-discovery-loop](../../../tasks/06-discovery-loop/README.md), [07-compile-artifact](../../../tasks/07-compile-artifact/README.md)
+**Slice**: [tasks/06-discovery-loop](../../../tasks/06-discovery-loop.md), [07-compile-artifact](../../../tasks/07-compile-artifact.md)
 
 ## Context
 

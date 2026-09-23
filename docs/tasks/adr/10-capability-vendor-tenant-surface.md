@@ -3,7 +3,7 @@
 **Date**: 2026-09-23  
 **Status**: Accepted  
 **Deciders**: implementer (assignment §1 environment + §3.7)  
-**Slice**: [03](../../../tasks/03-artifact-schema/README.md), [05](../../../tasks/05-surface-driver/README.md), [12](../../../tasks/12-evidence-report/README.md), [13](../../../tasks/13-overlay-stretch/README.md)
+**Slice**: [03](../../../tasks/03-artifact-schema.md), [05](../../../tasks/05-surface-driver.md), [12](../../../tasks/12-evidence-report.md), [13](../../../tasks/13-overlay-stretch.md)
 
 ## Context
 

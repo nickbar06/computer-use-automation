@@ -3,7 +3,7 @@
 **Date**: 2026-09-21  
 **Status**: Accepted  
 **Deciders**: scoping (user asked for Node)  
-**Slice**: [tasks/01-scaffold](../../../tasks/01-scaffold/README.md)
+**Slice**: [tasks/01-scaffold](../../../tasks/01-scaffold.md)
 
 ## Context
 

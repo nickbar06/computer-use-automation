@@ -3,7 +3,7 @@
 **Date**: 2026-09-21  
 **Status**: Accepted  
 **Deciders**: scoping (depth over breadth)  
-**Slice**: [tasks/12-evidence-report](../../../tasks/12-evidence-report/README.md), [13-overlay-stretch](../../../tasks/13-overlay-stretch/README.md)
+**Slice**: [tasks/12-evidence-report](../../../tasks/12-evidence-report.md), [13-overlay-stretch](../../../tasks/13-overlay-stretch.md)
 
 ## Context
 

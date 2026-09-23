@@ -3,7 +3,7 @@
 **Date**: 2026-09-21  
 **Status**: Accepted  
 **Deciders**: scoping (legacy cores have no test IDs)  
-**Slice**: [tasks/05-surface-driver](../../../tasks/05-surface-driver/README.md), [08-deterministic-replay](../../../tasks/08-deterministic-replay/README.md)
+**Slice**: [tasks/05-surface-driver](../../../tasks/05-surface-driver.md), [08-deterministic-replay](../../../tasks/08-deterministic-replay.md)
 
 ## Context
 

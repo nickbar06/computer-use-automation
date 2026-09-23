@@ -3,7 +3,7 @@
 **Date**: 2026-09-21  
 **Status**: Accepted  
 **Deciders**: scoping (brief says not to reward queues)  
-**Slice**: [tasks/10-cli](../../../tasks/10-cli/README.md)
+**Slice**: [tasks/10-cli](../../../tasks/10-cli.md)
 
 ## Context
 

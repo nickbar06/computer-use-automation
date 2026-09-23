@@ -3,7 +3,7 @@
 **Date**: 2026-09-23  
 **Status**: Accepted  
 **Deciders**: implementer (user: OpenAI SDK + other providers)  
-**Slice**: [05a-llm-provider](../../../tasks/05a-llm-provider/README.md), [06-discovery-loop](../../../tasks/06-discovery-loop/README.md)
+**Slice**: [05a-llm-provider](../../../tasks/05a-llm-provider.md), [06-discovery-loop](../../../tasks/06-discovery-loop.md)
 
 ## Context
 

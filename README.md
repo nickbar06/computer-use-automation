@@ -15,9 +15,9 @@ npm test
 ## How to work
 
 1. Read [docs/README.md](docs/README.md) once (30–40 minutes).
-2. Open [tasks/README.md](tasks/README.md). Start [Task 00](tasks/00-orientation/README.md).
-3. Each task folder has a spec (`README.md`), a lesson (`LESSON.md`), and a tracking file (`TRACKING.md`).
-4. When Acceptance is ticked **and** tracking has real validation output plus a handoff, set spec frontmatter `status: done` and check the index.
+2. Open [tasks/README.md](tasks/README.md). Start [Task 00](tasks/00-orientation.md).
+3. Each task is a spec file in `tasks/` (`00-orientation.md`, `01-scaffold.md`, …).
+4. When Acceptance is ticked, set spec frontmatter `status: done` and check the index.
 
 Do not skip ahead. Later tasks assume earlier ones exist.
 

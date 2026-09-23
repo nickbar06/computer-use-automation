@@ -1,0 +1,154 @@
+{
+  "schema_version": "1.0",
+  "id": "open_subaccount",
+  "name": "Open a sub-account",
+  "description": "Look up a member, enter an opening amount, and submit Open Sub-Account (irreversible).",
+  "version": "1.0.0",
+  "app": {
+    "vendor_product": "corelink.servicing",
+    "surface_kind": "legacy_web",
+    "entry_url": "http://127.0.0.1:8765/",
+    "entry_url_template": "http://127.0.0.1:8765/"
+  },
+  "contract": {
+    "inputs": [
+      {
+        "name": "member_id",
+        "type": "string",
+        "description": "Member identifier entered on the lookup screen",
+        "required": true,
+        "example": "12345"
+      },
+      {
+        "name": "amount",
+        "type": "money",
+        "description": "Opening amount for the new sub-account",
+        "required": true,
+        "example": "25.00"
+      }
+    ],
+    "outputs": [],
+    "business_outcomes": ["MEMBER_NOT_FOUND", "PERMISSION_DENIED", "VALIDATION_ERROR"]
+  },
+  "locators": {
+    "member_id": {
+      "name": "Member ID field",
+      "description": "Labeled textbox on the lookup form",
+      "strategies": [
+        { "kind": "role_name", "role": "textbox", "name": "Member ID" },
+        { "kind": "accessible_name", "name": "Member ID" }
+      ]
+    },
+    "find_member": {
+      "name": "Find Member",
+      "description": "Submit control that runs member lookup",
+      "strategies": [
+        { "kind": "role_name", "role": "button", "name": "Find Member" },
+        { "kind": "text", "text": "Find Member" }
+      ]
+    },
+    "opening_amount": {
+      "name": "Opening amount field",
+      "description": "Labeled amount on the member snapshot",
+      "strategies": [
+        { "kind": "role_name", "role": "textbox", "name": "Opening amount" },
+        { "kind": "accessible_name", "name": "Opening amount" }
+      ]
+    },
+    "open_subaccount": {
+      "name": "Open Sub-Account",
+      "description": "Irreversible submit that posts a new sub-account",
+      "strategies": [
+        { "kind": "role_name", "role": "button", "name": "Open Sub-Account" }
+      ]
+    },
+    "notice_ok": {
+      "name": "System notice OK",
+      "description": "Dismiss the recoverable System Notice interstitial",
+      "strategies": [
+        { "kind": "role_name", "role": "button", "name": "OK" }
+      ]
+    }
+  },
+  "steps": [
+    {
+      "id": "s00_open",
+      "description": "Open the CoreLink lookup console",
+      "action": "navigate",
+      "value": "http://127.0.0.1:8765/",
+      "risk": "safe"
+    },
+    {
+      "id": "s01_fill_member",
+      "description": "Fill Member ID from the invocation input",
+      "action": "fill",
+      "target": "member_id",
+      "input_from": "$inputs.member_id",
+      "risk": "safe"
+    },
+    {
+      "id": "s02_find",
+      "description": "Submit the lookup form",
+      "action": "click",
+      "target": "find_member",
+      "risk": "safe"
+    },
+    {
+      "id": "s03_amount",
+      "description": "Fill opening amount",
+      "action": "fill",
+      "target": "opening_amount",
+      "input_from": "$inputs.amount",
+      "risk": "safe"
+    },
+    {
+      "id": "s04_open",
+      "description": "Submit Open Sub-Account",
+      "action": "click",
+      "target": "open_subaccount",
+      "risk": "irreversible"
+    }
+  ],
+  "handlers": [
+    {
+      "when": { "kind": "text_present", "text": "No matching member" },
+      "outcome": "business_outcome",
+      "code": "MEMBER_NOT_FOUND"
+    },
+    {
+      "when": { "kind": "text_present", "text": "Access denied" },
+      "outcome": "business_outcome",
+      "code": "PERMISSION_DENIED"
+    },
+    {
+      "when": { "kind": "text_present", "text": "Member ID is required." },
+      "outcome": "business_outcome",
+      "code": "VALIDATION_ERROR"
+    },
+    {
+      "when": { "kind": "text_present", "text": "System Notice" },
+      "outcome": "recoverable",
+      "code": "SYSTEM_NOTICE",
+      "recover_step": {
+        "id": "r_notice_ok",
+        "description": "Dismiss System Notice",
+        "action": "click",
+        "target": "notice_ok",
+        "risk": "safe"
+      }
+    },
+    {
+      "when": { "kind": "text_present", "text": "Session expired" },
+      "outcome": "hard_failure",
+      "code": "SESSION_EXPIRED"
+    }
+  ],
+  "checkpoints": [
+    { "kind": "text_present", "text": "Sub-account opened" }
+  ],
+  "safety": {
+    "allowed_origins": ["http://127.0.0.1:8765", "http://localhost:8765"],
+    "allowed_actions": ["navigate", "click", "fill", "press", "extract", "select", "dismiss", "wait"],
+    "irreversible_steps": ["s04_open"]
+  }
+}

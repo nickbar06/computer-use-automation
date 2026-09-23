@@ -5,7 +5,7 @@
 **Spec**: [docs/ASSIGNMENT.md](../ASSIGNMENT.md)
 
 ---
-> Parent tracking file for the whole assignment. Slice-level evidence lives in `tasks/NN-*/TRACKING.md`.
+> Parent tracking file for the whole assignment. Paste slice-level command output here.
 > Do not mark this Complete while any Section 3 must-have is unimplemented or stubbed without a Cuts note.
 > `TBD` below means the program is not closed.
 ---
@@ -50,12 +50,12 @@ Execute [../tasks/README.md](../../tasks/README.md) in order (00→12, 13 option
 
 ## Progress checklist
 
-Copy from ASSIGNMENT.md program checklist. Tick only when the slice tracking file has real output.
+Copy from ASSIGNMENT.md program checklist. Tick only when the slice spec Acceptance items are checked and command output is pasted below.
 
 - [ ] 00 orientation
 - [x] 01 scaffold
 - [x] 02 mock-core
-- [ ] 03 artifact-schema
+- [x] 03 artifact-schema
 - [ ] 04 safety
 - [ ] 05 surface-driver
 - [ ] 05a llm-provider

@@ -70,6 +70,6 @@ You do not need a course in “AI agents” before Task 00. Watch these when a t
 
 15. **Browserbase / Stagehand or similar demos** — only if you want to see other locator strategies. Do not adopt them for the artifact; they hide the contract this assignment grades.
 
-## How to use this list with the lesson
+## How to use this list
 
-[LESSON.md](LESSON.md) tells you **which** link to open before each task. Do not binge 1–15 up front.
+Open the current task spec in `tasks/` and the links it names. Do not binge 1–15 up front.

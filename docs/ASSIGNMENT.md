@@ -10,7 +10,7 @@
 ---
 > Closing this assignment means the **demo thread is proven with artifacts on disk**, not that code exists.
 > Discovery JSONL must come from a live model. Replay must run without a model key.
-> `tsc --noEmit` is not validation. Pasted command output in tracking files is.
+> `tsc --noEmit` is not validation. Pasted command output in the program tracking file is.
 ---
 
 ## Original Request
@@ -37,14 +37,14 @@ Ship a public repo that a reviewer can clone and run:
 | - | --------- | ---------------- | ----- |
 | 1 | Goal-driven loop actually clicks/types/reads a live UI | `evidence/discovery/` JSONL + screenshots from a live key | 06–07, 12 |
 | 2 | Artifact is typed, versioned, parameterized (`$inputs.*`), not a chat dump | `capabilities/*.json` parses; no baked member id on fill steps | 03, 07 |
-| 3 | Replay of member `12345` returns savings `4250.00` without calling a model | pasted CLI output in Task 08/10 tracking | 08, 10 |
+| 3 | Replay of member `12345` returns savings `4250.00` without calling a model | pasted CLI output in the program tracking file | 08, 10 |
 | 4 | Replay of member `99999` is `business_outcome` / `MEMBER_NOT_FOUND`, not `failed` | pasted result JSON | 08 |
 | 5 | Irreversible open-sub-account without `--confirm` does not click submit; session owner becomes `human` | intervention.json + result `needs_intervention` | 08–09 |
 | 6 | Allowlist blocks off-origin navigation; logs redact account-like numbers | unit tests + sample redacted log | 04, 11 |
 | 7 | `REPORT.md` has **exactly** the seven headings below, and heading 4 answers **both** §3.7 questions (surface seam + cross-tenant reuse/drift) | file on disk | 12 |
 | 8 | Reviewer README has exact demo commands; secrets not in git | clone path | 12 |
 
-A criterion is unmet if the tracking file still says `TBD`.
+A criterion is unmet if the program tracking file still says `TBD`.
 
 ## Feature completeness (assignment Section 3)
 
@@ -107,7 +107,7 @@ Implication: execute via numbered slices in `tasks/`. Do not implement the whole
 
 | Phase | Status | Evidence |
 | ----- | ------ | -------- |
-| Recon | In progress | This file + ADR + task folders |
+| Recon | In progress | This file + ADR + task specs |
 | Implementation | Not started | `src/` exists and slices 01–10 `done` |
 | Runtime verification | Not started | pasted replay + `/health` output |
 | Browser verification | Not started | mock frameset + headed HITL |
@@ -130,7 +130,7 @@ Update [the master tracking file](tasks/2026-09-21-computer-use-takehome.md) whe
 
 ## Validation floor (what “done” looks like in a terminal)
 
-Required commands (exact names may match CLI task; output must be pasted into tracking, not summarized as “it worked”):
+Required commands (exact names may match CLI task; output must be pasted into the program tracking file, not summarized as “it worked”):
 
 ```text
 npm install

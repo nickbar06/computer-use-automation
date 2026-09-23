@@ -1,0 +1,14 @@
+{
+  "tenant_id": "lakecrest",
+  "vendor_product": "corelink.servicing",
+  "locators": {
+    "find_member": {
+      "name": "🔍 Search",
+      "description": "Lakecrest emoji label for the same find_member locator",
+      "strategies": [
+        { "kind": "role_name", "role": "button", "name": "🔍 Search" },
+        { "kind": "text", "text": "🔍 Search" }
+      ]
+    }
+  }
+}

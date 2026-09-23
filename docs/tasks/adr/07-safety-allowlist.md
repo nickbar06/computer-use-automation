@@ -3,7 +3,7 @@
 **Date**: 2026-09-21  
 **Status**: Accepted  
 **Deciders**: assignment §3.4  
-**Slice**: [tasks/04-safety](../../../tasks/04-safety/README.md)
+**Slice**: [tasks/04-safety](../../../tasks/04-safety.md)
 
 ## Context
 
