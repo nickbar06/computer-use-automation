@@ -1,0 +1,47 @@
+---
+description: Keep Playwright and other surface APIs out of core domain modules.
+globs: src/**/*.ts
+alwaysApply: true
+---
+
+# Surface-independent core
+
+Core describes **what** to observe or do. Adapters describe **how** on one frontend.
+
+The concrete slice is Playwright + a local web core. That must not appear on domain signatures.
+
+## Forbidden in domain layers
+
+These modules must not import `playwright` or mention `Page`, `Locator`, `Browser`, `Frame`, `BrowserContext`:
+
+- `src/domain/`
+- `src/artifact/`
+- `src/safety/`
+- `src/replay/`
+- `src/agent/`
+- `src/escalate/`
+
+`src/proxy/` is the mock *application*, not a driver. It also must not import Playwright.
+
+## Allowed
+
+- `src/surface/playwright/` — the only Playwright import
+- `src/cli.ts` — composition root; may construct `PlaywrightDriver` and pass `SurfaceDriver` into discover/replay
+
+## Signatures
+
+Bad:
+
+```ts
+function replay(page: Page, artifact: CapabilityArtifact): Promise<RunResult>
+```
+
+Good:
+
+```ts
+function replay(driver: SurfaceDriver, artifact: CapabilityArtifact): Promise<RunResult>
+```
+
+Use `Observation`, `CanonicalAction`, and `NamedLocator` from domain/artifact. Navigate and “current page” use string `location`, not Playwright URL objects.
+
+If a function in replay, discover, policy, or compile needs a `Page` to compile, the boundary is already wrong — move that code into the adapter.

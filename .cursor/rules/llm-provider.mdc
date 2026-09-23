@@ -1,0 +1,42 @@
+---
+description: Keep vendor LLM SDKs out of the agent loop and domain port.
+globs: src/**/*.ts
+alwaysApply: true
+---
+
+# LLM provider port
+
+Discovery describes **what** to ask a model (`LlmRequest` / `LlmResponse`). Vendor SDKs describe **how**.
+
+## Forbidden
+
+These modules must not import `openai` or `@anthropic-ai/sdk`:
+
+- `src/domain/`
+- `src/agent/`
+- `src/replay/`
+- `src/artifact/`
+- `src/safety/`
+- `src/escalate/`
+
+Replay must not take `LlmProvider` at all.
+
+## Allowed
+
+- `src/llm/openai/` — official OpenAI SDK
+- `src/llm/anthropic/` — Anthropic adapter
+- `src/cli.ts` — `resolveLlmProvider()` and pass `LlmProvider` into discover
+
+## Signatures
+
+Bad:
+
+```ts
+function nextAction(client: OpenAI, messages: ChatCompletionMessageParam[])
+```
+
+Good:
+
+```ts
+function nextAction(llm: LlmProvider, messages: LlmMessage[]): Promise<ActPayload>
+```
