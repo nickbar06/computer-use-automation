@@ -1,7 +1,8 @@
 ---
 id: "11"
 title: Tests
-status: todo
+status: done
+completed: 2026-09-23
 optional: false
 ---
 
@@ -26,8 +27,8 @@ Happy-path replay must finish in **seconds**. If a test exceeds ~30s, the frames
 
 ## Acceptance
 
-- [ ] `npm test` all pass (prior slice tests + `replay.test.ts`)
-- [ ] `npx tsc --noEmit` clean
+- [x] `npm test` all pass (prior slice tests + `replay.test.ts`)
+- [x] `npx tsc --noEmit` clean
 
 
 ## Mark done

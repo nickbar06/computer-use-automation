@@ -64,7 +64,7 @@ Copy from ASSIGNMENT.md program checklist. Tick only when the slice spec Accepta
 - [x] 08 deterministic-replay
 - [x] 09 hitl
 - [x] 10 cli
-- [ ] 11 tests
+- [x] 11 tests
 - [ ] 12 evidence-report
 - [ ] 13 overlay (optional)
 - [ ] Feature-completeness table in ASSIGNMENT.md all “working or stubbed”
@@ -76,6 +76,7 @@ Maintain as slices land. Do not leave this table blank at close.
 
 | File | Change type | Notes |
 | ---- | ----------- | ----- |
+| `tests/replay.test.ts` | added | Playwright + `listenMock(0)`; 12345 / 99999 / HITL |
 | `src/cli.ts` | updated | `--out`, `--overlay`, redacted RunResult, help ≡ README |
 | `tests/cli.test.ts` | added | help verbatim in README; overlay; missing session |
 | `src/escalate/control.ts` | added | file-based SessionControl; no Playwright |
@@ -265,6 +266,23 @@ status=success outputs.savings_balance=4250.00
 npm run cua -- replay capabilities/lookup_savings.json --input member_id=99999
 status=business_outcome outcome_code=MEMBER_NOT_FOUND
 ```
+
+**Output** (Task 11 Playwright regression):
+
+```text
+npx tsc --noEmit
+# clean
+
+npm test
+✔ lookup 12345 succeeds with savings 4250.00 (585.90925ms)
+✔ lookup 99999 is business_outcome MEMBER_NOT_FOUND (366.512042ms)
+✔ open_subaccount without confirm needs_intervention on irreversible step (874.8515ms)
+ℹ tests 48
+ℹ pass 48
+ℹ fail 0
+```
+
+Prior slice tests still green. Happy-path Playwright replay finished in well under 30s (no frameset observe hang).
 
 Paste discover, replay success, replay not-found, and escalate (or point at `evidence/*` **and** quote `result.json` status fields).
 

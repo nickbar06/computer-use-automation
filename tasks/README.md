@@ -49,7 +49,7 @@ Each implementation slice **adds** its tests and must leave `npm test` green. Do
 - [x] [08-deterministic-replay](08-deterministic-replay.md)
 - [x] [09-hitl](09-hitl.md)
 - [x] [10-cli](10-cli.md)
-- [ ] [11-tests](11-tests.md)
+- [x] [11-tests](11-tests.md)
 - [ ] [12-evidence-report](12-evidence-report.md)
 - [ ] [13-overlay-stretch](13-overlay-stretch.md) (optional)
 
