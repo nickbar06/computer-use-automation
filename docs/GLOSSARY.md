@@ -1,6 +1,6 @@
 # Glossary
 
-Learn these before Task 00. The assignment grades the ideas, not the vocabulary.
+The assignment grades the ideas, not the vocabulary.
 
 **Agent** — a loop: model sees state, chooses a tool/action, environment changes, repeat until a stop condition.
 

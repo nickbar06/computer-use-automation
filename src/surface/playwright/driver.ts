@@ -16,6 +16,12 @@ export type PlaywrightDriverOptions = {
   policy?: Policy;
 };
 
+/**
+ * HOW for `legacy_web` and `web`. Sibling classes (see `src/domain/surface.ts` pseudocode):
+ *   PlaywrightDriver  — this file (frameset / DOM a11y)
+ *   ModernWebDriver   — same port, SPA waits, no frameset (optional later)
+ *   DesktopDriver     — same port, OS a11y; not built
+ */
 export class PlaywrightDriver implements SurfaceDriver {
   private readonly headless: boolean;
   private tracingDir?: string;

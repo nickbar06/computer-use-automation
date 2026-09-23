@@ -58,7 +58,7 @@ npm run cua -- discover --goal "Look up savings balance" --input member_id=12345
 npm run cua -- replay capabilities/discovered.json --input member_id=12345
 ```
 
-Checked-in evidence: [evidence/README.md](evidence/README.md). Design write-up: [REPORT.md](REPORT.md).
+Checked-in evidence: [evidence/README.md](evidence/README.md). Design write-up: [REPORT.md](REPORT.md). Architecture notes: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Locked decisions
 
@@ -72,11 +72,10 @@ Checked-in evidence: [evidence/README.md](evidence/README.md). Design write-up: 
 ## Layout
 
 ```
-docs/           why and how
-tasks/          numbered implementation tickets
 src/            implementation
-capabilities/   saved artifacts + tenant overlays
+capabilities/   artifacts + tenant overlays
 evidence/       discovery + replay + escalate
 policies/       allowlist JSON
+docs/           architecture, decisions, glossary
 REPORT.md       seven required headings
 ```

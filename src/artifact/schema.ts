@@ -84,6 +84,8 @@ export const capabilityArtifactSchema = z.object({
   version: z.string(),
   app: z.object({
     vendor_product: z.string(),
+    // Which frontend class this capability was recorded on. Not a new schema per surface:
+    // legacy_web / web → PlaywrightDriver; desktop → future OS-a11y SurfaceDriver.
     surface_kind: z.enum(["web", "legacy_web", "desktop"]),
     entry_url: z.string(),
     entry_url_template: z.string().optional(),
@@ -111,6 +113,8 @@ export type Condition = z.infer<typeof conditionSchema>;
 export type Step = z.infer<typeof stepSchema>;
 export type Handler = z.infer<typeof handlerSchema>;
 export type TenantOverlay = z.infer<typeof tenantOverlaySchema>;
+
+/** Recorded WHAT (steps, locators, $inputs). Replay on any SurfaceDriver for `app.surface_kind`. */
 export type CapabilityArtifact = z.infer<typeof capabilityArtifactSchema>;
 
 export function applyOverlay(

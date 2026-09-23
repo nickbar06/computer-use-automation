@@ -1,8 +1,0 @@
-{
-  "outputs": {},
-  "recovered": [],
-  "evidence_dir": "/Users/nico/Desktop/dev/computer-use-automation/evidence/replay_no_confirm",
-  "status": "needs_intervention",
-  "step_id": "s04_open",
-  "observed": "Member name: JANE M\n\nMember Snapshot\nProduct\tBalance\tStatus\nSavings\t4250.00\tok\nChecking\t890.12\tok\n\nOpening amount\n\nCoreLink Servicing 7.4 — Riverside Community CU — operator T. BROOKS"
-}

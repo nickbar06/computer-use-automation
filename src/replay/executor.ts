@@ -8,6 +8,7 @@ import { attachSessionToDriver, SessionControl, writeHumanLog } from "../escalat
 import { checkAction, checkNavigation, type Policy } from "../safety/policy.ts";
 import { appendRedactedJsonl, dumpsRedacted } from "../safety/redact.ts";
 
+/** Same CapabilityArtifact for every surface; pass the adapter that matches `artifact.app.surface_kind`. */
 export type ReplayExecutorOptions = {
   driver: SurfaceDriver;
   artifact: CapabilityArtifact;
