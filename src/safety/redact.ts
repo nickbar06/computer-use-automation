@@ -14,7 +14,7 @@ export function redactText(text: string): string {
   return text
     .replace(/(api[_-]?key|token|password|secret)(\s*[:=]\s*)[^\s"',}]+/gi, "$1$2[REDACTED]")
     .replace(/\d{3}-\d{2}-\d{4}/g, "[SSN]")
-    .replace(/^(Member name|Name):\s*.+$/gim, "$1: [NAME]")
+    .replace(/(Member name|Name):\s*[^\n"]+/gi, "$1: [NAME]")
     .replace(/\d{8,17}/g, "[ACCOUNT]");
 }
 

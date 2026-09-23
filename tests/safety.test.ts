@@ -56,6 +56,10 @@ test("sample string with account + SSN + password is redacted", () => {
   assert.doesNotMatch(out, /123-45-6789/);
   assert.doesNotMatch(out, /hunter2/);
   assert.doesNotMatch(out, /Jane Doe/);
+  assert.match(
+    redactText(`"observed": "Member name: JANE M\\nMember Snapshot"`),
+    /Member name: \[NAME\]/,
+  );
 });
 
 test("redactJson replaces sensitive keys", () => {

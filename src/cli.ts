@@ -3,14 +3,54 @@ import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 import { DiscoveryRunner } from "./agent/loop.ts";
-import { capabilityArtifactSchema, reviewSummary } from "./artifact/schema.ts";
+import {
+  applyOverlay,
+  capabilityArtifactSchema,
+  reviewSummary,
+  tenantOverlaySchema,
+  type CapabilityArtifact,
+} from "./artifact/schema.ts";
 import { resolveLlmProvider } from "./llm/resolve.ts";
 import { DEFAULT_ORIGIN, DEFAULT_PORT, ROOT } from "./paths.ts";
 import { listenMock, mainServe } from "./proxy/server.ts";
 import { SessionControl } from "./escalate/control.ts";
 import { ReplayExecutor } from "./replay/executor.ts";
 import { loadPolicy, originOf } from "./safety/policy.ts";
+import { dumpsRedacted, redactText } from "./safety/redact.ts";
 import { PlaywrightDriver } from "./surface/playwright/driver.ts";
+
+export const CLI_HELP = `cua — computer-use automation
+
+Commands:
+  serve [--port 8765] [--host 127.0.0.1]
+  discover --goal "..." --input member_id=12345 [--target URL] [--out path] [--evidence dir] [--headed] [--start-mock]
+  replay <artifact.json> --input k=v [--evidence dir] [--headed] [--confirm] [--overlay file] [--operator-timeout 180]
+  operator resume --session <id>
+  operator status --session <id>
+
+--input is repeatable key=value.
+--start-mock is on by default (use --no-start-mock to skip).
+--auto-resume is tests/demos only.
+
+Examples:
+  npm run cua -- help
+  npm run cua -- serve
+  npm run cua -- discover --goal "Look up savings balance" --input member_id=12345
+  npm run cua -- replay capabilities/lookup_savings.json --input member_id=12345
+  npm run cua -- replay capabilities/lookup_savings.json --input member_id=99999
+  npm run cua -- replay capabilities/open_subaccount.json --input member_id=12345 --input amount=25.00
+  npm run cua -- operator resume --session <id>
+  npm test
+`;
+
+export function loadReplayArtifact(artifactPath: string, overlayPath?: string): CapabilityArtifact {
+  const artifact = capabilityArtifactSchema.parse(
+    JSON.parse(readFileSync(resolve(artifactPath), "utf8")),
+  );
+  if (!overlayPath) return artifact;
+  const overlay = tenantOverlaySchema.parse(JSON.parse(readFileSync(resolve(overlayPath), "utf8")));
+  return applyOverlay(artifact, overlay);
+}
 
 function loadEnv(filePath: string): void {
   if (!existsSync(filePath)) return;
@@ -26,28 +66,7 @@ function loadEnv(filePath: string): void {
 }
 
 function printHelp(): void {
-  console.log(`cua — computer-use automation
-
-Commands:
-  serve                 start the local CoreLink mock (Task 02)
-  discover              LLM observe → decide → act (Task 06)
-  replay                run a capability with no model (Task 08)
-  operator              resume | status a HITL session (Task 09)
-
-Flags:
-  --confirm             allow irreversible replay steps
-  --auto-resume         tests only: write RESUME immediately
-  --operator-timeout N  seconds to wait for a human (default 0)
-  --session <id>        HITL session id for operator
-
-Examples:
-  npm run cua -- help
-  npm run cua -- serve
-  npm run cua -- discover --goal "Look up savings balance" --input member_id=12345
-  npm run cua -- replay capabilities/lookup_savings.json --input member_id=12345
-  npm run cua -- replay capabilities/open_subaccount.json --input member_id=12345 --input amount=25.00
-  npm run cua -- operator resume --session <id>
-`);
+  console.log(CLI_HELP);
 }
 
 function parseInputs(items: string[] | undefined): Record<string, string> {
@@ -80,6 +99,7 @@ async function mainDiscover(values: {
   goal?: string;
   input?: string[];
   target?: string;
+  out?: string;
   evidence?: string;
   headed?: boolean;
   "no-start-mock"?: boolean;
@@ -90,6 +110,7 @@ async function mainDiscover(values: {
   }
   const target = values.target ?? `${DEFAULT_ORIGIN}/`;
   const evidenceDir = resolve(values.evidence ?? join(ROOT, "evidence", "discovery"));
+  const outPath = resolve(values.out ?? join(ROOT, "capabilities", "discovered.json"));
   const policy = loadPolicy();
   const closeMock = await ensureMock(target, !values["no-start-mock"]);
   const driver = new PlaywrightDriver({ headless: !values.headed, policy });
@@ -111,7 +132,9 @@ async function mainDiscover(values: {
     }
     console.log(`evidence=${evidenceDir}`);
     if (result.artifact) {
+      dumpsRedacted(outPath, `${JSON.stringify(result.artifact, null, 2)}\n`);
       console.log(reviewSummary(result.artifact));
+      console.log(`artifact=${outPath}`);
     }
     return result.stop === "done" ? 0 : 1;
   } finally {
@@ -127,6 +150,7 @@ async function mainReplay(
     evidence?: string;
     headed?: boolean;
     confirm?: boolean;
+    overlay?: string;
     "auto-resume"?: boolean;
     "operator-timeout"?: string;
     "no-start-mock"?: boolean;
@@ -136,9 +160,7 @@ async function mainReplay(
     console.error("replay requires an artifact path");
     return 1;
   }
-  const artifact = capabilityArtifactSchema.parse(
-    JSON.parse(readFileSync(resolve(artifactPath), "utf8")),
-  );
+  const artifact = loadReplayArtifact(artifactPath, values.overlay);
   const evidenceDir = resolve(values.evidence ?? join(ROOT, "evidence", "replay"));
   const policy = loadPolicy();
   const timeoutSec = values["operator-timeout"] ? Number(values["operator-timeout"]) : 0;
@@ -158,7 +180,7 @@ async function mainReplay(
       autoResume: Boolean(values["auto-resume"]),
       operatorTimeoutMs: Number.isFinite(timeoutSec) ? timeoutSec * 1000 : 0,
     }).run(parseInputs(values.input));
-    console.log(JSON.stringify(result, null, 2));
+    console.log(redactText(JSON.stringify(result, null, 2)));
     if (result.status === "needs_intervention" && result.control?.session_id) {
       console.error(
         `HITL: npm run cua -- operator resume --session ${result.control.session_id}`,
@@ -185,9 +207,12 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
       input: { type: "string", multiple: true },
       target: { type: "string" },
       evidence: { type: "string" },
+      out: { type: "string" },
+      overlay: { type: "string" },
       headed: { type: "boolean" },
       confirm: { type: "boolean" },
       session: { type: "string" },
+      "start-mock": { type: "boolean" },
       "auto-resume": { type: "boolean" },
       "operator-timeout": { type: "string" },
       "no-start-mock": { type: "boolean" },
@@ -211,16 +236,21 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
     return 0;
   }
 
-  if (command === "discover") {
-    return mainDiscover(values);
-  }
+  try {
+    if (command === "discover") {
+      return await mainDiscover(values);
+    }
 
-  if (command === "replay") {
-    return mainReplay(positionals[1], values);
-  }
+    if (command === "replay") {
+      return await mainReplay(positionals[1], values);
+    }
 
-  if (command === "operator") {
-    return mainOperator(positionals[1], values.session);
+    if (command === "operator") {
+      return mainOperator(positionals[1], values.session);
+    }
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : String(err));
+    return 1;
   }
 
   console.error(`unknown command: ${command}`);

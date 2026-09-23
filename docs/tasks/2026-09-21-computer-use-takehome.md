@@ -63,7 +63,7 @@ Copy from ASSIGNMENT.md program checklist. Tick only when the slice spec Accepta
 - [x] 07 compile-artifact
 - [x] 08 deterministic-replay
 - [x] 09 hitl
-- [ ] 10 cli
+- [x] 10 cli
 - [ ] 11 tests
 - [ ] 12 evidence-report
 - [ ] 13 overlay (optional)
@@ -76,6 +76,8 @@ Maintain as slices land. Do not leave this table blank at close.
 
 | File | Change type | Notes |
 | ---- | ----------- | ----- |
+| `src/cli.ts` | updated | `--out`, `--overlay`, redacted RunResult, help ≡ README |
+| `tests/cli.test.ts` | added | help verbatim in README; overlay; missing session |
 | `src/escalate/control.ts` | added | file-based SessionControl; no Playwright |
 | `src/replay/executor.ts` | updated | irreversible/checkpoint → pauseForHuman + waitForResume |
 | `src/cli.ts` | updated | `operator resume\|status`, `--auto-resume`, `--operator-timeout` |
@@ -233,6 +235,36 @@ npm run cua -- operator status --session 24d4deed
 ```
 
 `sessions/24d4deed/` has `control.json`, `intervention.json`, `OPERATOR.txt` (already-open window + resume command). `evidence/escalate/s04_open_stuck.png` exists. Replay did not POST `/open` (no `--confirm`). Resume path does not call `chromium.launch` / `newPage`. Default `--operator-timeout` is 0 so CLI does not hang; use `--operator-timeout 180` for a live headed handoff.
+
+**Output** (Task 10 CLI):
+
+```text
+npm test
+ℹ tests 45
+ℹ pass 45
+ℹ fail 0
+
+npm run cua -- help
+# matches README command block (serve / discover / replay / operator)
+
+npm run cua -- operator resume --session does-not-exist
+session not found: does-not-exist
+# exit 1
+
+curl http://127.0.0.1:8765/health
+{"ok":true}
+
+npm run cua -- serve --port 8766
+CoreLink mock listening on http://127.0.0.1:8766
+curl http://127.0.0.1:8766/health
+{"ok":true}
+
+npm run cua -- replay capabilities/lookup_savings.json --input member_id=12345
+status=success outputs.savings_balance=4250.00
+
+npm run cua -- replay capabilities/lookup_savings.json --input member_id=99999
+status=business_outcome outcome_code=MEMBER_NOT_FOUND
+```
 
 Paste discover, replay success, replay not-found, and escalate (or point at `evidence/*` **and** quote `result.json` status fields).
 

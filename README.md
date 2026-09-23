@@ -2,32 +2,46 @@
 
 interface.ai interview project: an LLM discovers a flow on a live UI, the run is compiled into a **typed capability artifact**, and production replay is deterministic (no model in the loop).
 
-Task 01 scaffold is in place (`npm run cua -- help`). Later slices add the mock, discover, and replay. Work happens by opening the next task file, building what it specifies, then marking that file `status: done`.
+```text
+cua — computer-use automation
+
+Commands:
+  serve [--port 8765] [--host 127.0.0.1]
+  discover --goal "..." --input member_id=12345 [--target URL] [--out path] [--evidence dir] [--headed] [--start-mock]
+  replay <artifact.json> --input k=v [--evidence dir] [--headed] [--confirm] [--overlay file] [--operator-timeout 180]
+  operator resume --session <id>
+  operator status --session <id>
+
+--input is repeatable key=value.
+--start-mock is on by default (use --no-start-mock to skip).
+--auto-resume is tests/demos only.
+
+Examples:
+  npm run cua -- help
+  npm run cua -- serve
+  npm run cua -- discover --goal "Look up savings balance" --input member_id=12345
+  npm run cua -- replay capabilities/lookup_savings.json --input member_id=12345
+  npm run cua -- replay capabilities/lookup_savings.json --input member_id=99999
+  npm run cua -- replay capabilities/open_subaccount.json --input member_id=12345 --input amount=25.00
+  npm run cua -- operator resume --session <id>
+  npm test
+```
+
+## Setup
+
+Requires Node 20+. Replay of the hand-authored JSON in `capabilities/` does **not** need a model key. Discover does (`OPENAI_API_KEY` or `ANTHROPIC_API_KEY` in `.env`; placeholders only in `.env.example`).
 
 ```text
 npm install
-npm run cua -- help
-npm run cua -- serve
-# http://127.0.0.1:8765/  (frameset; Find Member in the workspace frame)
-npm run cua -- discover --goal "Look up savings balance" --input member_id=12345
-npm run cua -- replay capabilities/lookup_savings.json --input member_id=12345
-npm run cua -- replay capabilities/open_subaccount.json --input member_id=12345 --input amount=25.00
-npm run cua -- operator resume --session <id>
-npm test
+npx playwright install chromium
+cp .env.example .env   # only if you will run discover
 ```
 
-## How to work
+`serve` starts the local CoreLink mock at http://127.0.0.1:8765/ (frameset; Find Member lives in the workspace frame). Discover and replay start that mock themselves when the target is localhost and `/health` is down.
 
-1. Read [docs/README.md](docs/README.md) once (30–40 minutes).
-2. Open [tasks/README.md](tasks/README.md). Start [Task 00](tasks/00-orientation.md).
-3. Each task is a spec file in `tasks/` (`00-orientation.md`, `01-scaffold.md`, …).
-4. When Acceptance is ticked, set spec frontmatter `status: done` and check the index.
-
-Do not skip ahead. Later tasks assume earlier ones exist.
+Demo path: discover a goal (writes `capabilities/discovered.json` by default), then replay that artifact. Reviewers can skip discover and replay `capabilities/lookup_savings.json` directly.
 
 ## Locked decisions
-
-These are already chosen. Do not re-litigate them in a task unless a later task explicitly revisits them.
 
 - **Language:** TypeScript on Node 20+ (not Python)
 - **Target:** local mock “CoreLink” core-servicing console we control (not ParaBank, not a public cart)
@@ -37,24 +51,24 @@ These are already chosen. Do not re-litigate them in a task unless a later task 
 - **Surface boundary:** core describes WHAT (observe/act/result). Playwright is one adapter. Discovery, replay, artifacts, and policy never take `Page` or `Locator`.
 - **Four layers:** capability → vendor product (`corelink.servicing`) → tenant overlay (labels/emoji) → surface adapter. CoreLink is not a driver type.
 
-## Layout (what will exist when tasks are done)
+## Layout
 
 ```
-docs/           why and how (you are here)
+docs/           why and how
 tasks/          numbered implementation tickets
-src/            implementation (created by tasks)
-capabilities/   saved artifacts
+src/            implementation
+capabilities/   saved artifacts + tenant overlays
 evidence/       required demo logs
 policies/       allowlist JSON
 ```
 
-## Assignment deliverables (end state)
+## Assignment deliverables
 
-The grading contract is [docs/ASSIGNMENT.md](docs/ASSIGNMENT.md) (harness form). Closing it requires pasted validation on [docs/tasks/2026-09-21-computer-use-takehome.md](docs/tasks/2026-09-21-computer-use-takehome.md), not a claim that code exists.
+The grading contract is [docs/ASSIGNMENT.md](docs/ASSIGNMENT.md). Closing it requires pasted validation on [docs/tasks/2026-09-21-computer-use-takehome.md](docs/tasks/2026-09-21-computer-use-takehome.md).
 
 Reviewers still expect:
 
 - public GitHub repo
-- `/README.md` — setup + demo commands
+- `/README.md` — setup + demo commands (this file)
 - `/REPORT.md` — seven required headings
 - `/evidence/` — discovery run + replay run + one exceptional replay

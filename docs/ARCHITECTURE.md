@@ -153,7 +153,7 @@ Left out on purpose: `hover`, `drag`, `scroll`, `download`, pixel clicks, raw CS
 | `src/escalate/` | WHAT | `SessionControl` owner flip + `OPERATOR.txt` (no Playwright) |
 | `src/surface/playwright/` | HOW | only module that imports `playwright`; tracing zip on pause/resume |
 | `src/proxy/` | target app | hostile CoreLink mock |
-| `src/cli.ts` | compose | wires mock + PlaywrightDriver + discover/replay/operator |
+| `src/cli.ts` | compose | wires mock + PlaywrightDriver + discover/replay/operator; `--overlay` / `--out` |
 
 ## Result contract
 

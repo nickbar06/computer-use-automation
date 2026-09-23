@@ -31,6 +31,7 @@ Each implementation slice **adds** its tests and must leave `npm test` green. Do
 | 07 | extend `schema.test.ts` | compile fake transcript → `$inputs.member_id` |
 | 08 | `tests/handlers.test.ts` | fake `SurfaceDriver`; taxonomy |
 | 09 | `tests/control.test.ts` | owner flip, no browser |
+| 10 | `tests/cli.test.ts` | help matches README; overlay; missing session |
 | 11 | `tests/replay.test.ts` | Playwright + mock; **all prior tests still pass** |
 | 13 | `tests/overlay.test.ts` | Northlake / Lakecrest skins (optional) |
 
@@ -47,7 +48,7 @@ Each implementation slice **adds** its tests and must leave `npm test` green. Do
 - [x] [07-compile-artifact](07-compile-artifact.md)
 - [x] [08-deterministic-replay](08-deterministic-replay.md)
 - [x] [09-hitl](09-hitl.md)
-- [ ] [10-cli](10-cli.md)
+- [x] [10-cli](10-cli.md)
 - [ ] [11-tests](11-tests.md)
 - [ ] [12-evidence-report](12-evidence-report.md)
 - [ ] [13-overlay-stretch](13-overlay-stretch.md) (optional)

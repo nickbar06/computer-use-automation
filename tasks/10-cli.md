@@ -1,7 +1,8 @@
 ---
 id: "10"
 title: CLI
-status: todo
+status: done
+completed: 2026-09-23
 optional: false
 ---
 
@@ -41,12 +42,12 @@ Replay prints redacted `RunResult` JSON. Exit 2 only on `status === failed`. `bu
 
 ## Acceptance
 
-- [ ] `npm run cua -- help` matches README
-- [ ] `serve` stays up; `/health` works
-- [ ] `replay capabilities/lookup_savings.json --input member_id=12345` succeeds without a model key
-- [ ] `replay ... --input member_id=99999` prints `MEMBER_NOT_FOUND`
-- [ ] `operator resume` with a missing session fails clearly
-- [ ] `npm test` still green
+- [x] `npm run cua -- help` matches README
+- [x] `serve` stays up; `/health` works
+- [x] `replay capabilities/lookup_savings.json --input member_id=12345` succeeds without a model key
+- [x] `replay ... --input member_id=99999` prints `MEMBER_NOT_FOUND`
+- [x] `operator resume` with a missing session fails clearly
+- [x] `npm test` still green
 
 
 ## Mark done
