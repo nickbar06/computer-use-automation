@@ -1,0 +1,3 @@
+{"step_id":"s00_open","action":"navigate"}
+{"step_id":"s01_fill_member","action":"fill"}
+{"step_id":"s02_find","action":"click"}

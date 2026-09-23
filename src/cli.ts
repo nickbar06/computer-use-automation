@@ -3,10 +3,11 @@ import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 import { DiscoveryRunner } from "./agent/loop.ts";
-import { reviewSummary } from "./artifact/schema.ts";
+import { capabilityArtifactSchema, reviewSummary } from "./artifact/schema.ts";
 import { resolveLlmProvider } from "./llm/resolve.ts";
 import { DEFAULT_ORIGIN, DEFAULT_PORT, ROOT } from "./paths.ts";
 import { listenMock, mainServe } from "./proxy/server.ts";
+import { ReplayExecutor } from "./replay/executor.ts";
 import { loadPolicy, originOf } from "./safety/policy.ts";
 import { PlaywrightDriver } from "./surface/playwright/driver.ts";
 
@@ -111,6 +112,44 @@ async function mainDiscover(values: {
   }
 }
 
+async function mainReplay(
+  artifactPath: string | undefined,
+  values: {
+    input?: string[];
+    evidence?: string;
+    headed?: boolean;
+    confirm?: boolean;
+    "no-start-mock"?: boolean;
+  },
+): Promise<number> {
+  if (!artifactPath) {
+    console.error("replay requires an artifact path");
+    return 1;
+  }
+  const artifact = capabilityArtifactSchema.parse(
+    JSON.parse(readFileSync(resolve(artifactPath), "utf8")),
+  );
+  const evidenceDir = resolve(values.evidence ?? join(ROOT, "evidence", "replay"));
+  const policy = loadPolicy();
+  const closeMock = await ensureMock(artifact.app.entry_url, !values["no-start-mock"]);
+  const driver = new PlaywrightDriver({ headless: !values.headed, policy });
+  await driver.start();
+  try {
+    const result = await new ReplayExecutor({
+      driver,
+      artifact,
+      policy,
+      confirmIrreversible: Boolean(values.confirm),
+      evidenceDir,
+    }).run(parseInputs(values.input));
+    console.log(JSON.stringify(result, null, 2));
+    return result.status === "failed" ? 2 : 0;
+  } finally {
+    await driver.close();
+    await closeMock();
+  }
+}
+
 export async function main(argv = process.argv.slice(2)): Promise<number> {
   loadEnv(join(ROOT, ".env"));
 
@@ -126,6 +165,7 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
       target: { type: "string" },
       evidence: { type: "string" },
       headed: { type: "boolean" },
+      confirm: { type: "boolean" },
       "no-start-mock": { type: "boolean" },
     },
   });
@@ -151,7 +191,11 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
     return mainDiscover(values);
   }
 
-  if (command === "replay" || command === "operator") {
+  if (command === "replay") {
+    return mainReplay(positionals[1], values);
+  }
+
+  if (command === "operator") {
     console.error(`${command}: not implemented yet.`);
     return 1;
   }

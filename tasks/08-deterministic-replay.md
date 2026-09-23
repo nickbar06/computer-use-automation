@@ -1,7 +1,8 @@
 ---
 id: "08"
 title: Deterministic replay
-status: todo
+status: done
+completed: 2026-09-23
 optional: false
 ---
 
@@ -66,12 +67,12 @@ Live Playwright replay against the mock can wait for Task 11; **do** still run t
 
 ## Acceptance (with mock + driver)
 
-- [ ] `tests/handlers.test.ts` exists; `npm test` green
-- [ ] `src/replay/` has no `playwright` import; executor is `SurfaceDriver`, not `Page`
-- [ ] Replay lookup `member_id=12345` → `status: success`, `outputs.savings_balance === "4250.00"`
-- [ ] Replay lookup `member_id=99999` → `status: business_outcome`, `outcome_code === "MEMBER_NOT_FOUND"` (not `failed`)
-- [ ] Replay open_subaccount without confirm → does **not** click Open Sub-Account; result is `needs_intervention` (or HITL if 09 is done)
-- [ ] Replay with confirm completes to `Sub-account opened`
-- [ ] Each run writes jsonl + screenshots under the evidence dir; a `failed` / `hard_failure` run includes a failure screenshot
-- [ ] A single replay of the happy path finishes in seconds, not minutes (frameset observe bug is fixed)
+- [x] `tests/handlers.test.ts` exists; `npm test` green
+- [x] `src/replay/` has no `playwright` import; executor is `SurfaceDriver`, not `Page`
+- [x] Replay lookup `member_id=12345` → `status: success`, `outputs.savings_balance === "4250.00"`
+- [x] Replay lookup `member_id=99999` → `status: business_outcome`, `outcome_code === "MEMBER_NOT_FOUND"` (not `failed`)
+- [x] Replay open_subaccount without confirm → does **not** click Open Sub-Account; result is `needs_intervention` (or HITL if 09 is done)
+- [x] Replay with confirm completes to `Sub-account opened`
+- [x] Each run writes jsonl + screenshots under the evidence dir; a `failed` / `hard_failure` run includes a failure screenshot
+- [x] A single replay of the happy path finishes in seconds, not minutes (frameset observe bug is fixed)
 

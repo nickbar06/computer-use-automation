@@ -61,7 +61,7 @@ Copy from ASSIGNMENT.md program checklist. Tick only when the slice spec Accepta
 - [x] 05a llm-provider
 - [x] 06 discovery-loop
 - [x] 07 compile-artifact
-- [ ] 08 deterministic-replay
+- [x] 08 deterministic-replay
 - [ ] 09 hitl
 - [ ] 10 cli
 - [ ] 11 tests
@@ -76,6 +76,7 @@ Maintain as slices land. Do not leave this table blank at close.
 
 | File | Change type | Notes |
 | ---- | ----------- | ----- |
+| `src/replay/executor.ts` | added | LLM-free replay + handler taxonomy |
 | `src/artifact/compile.ts` | added | transcript → capability (`$inputs.member_id`) |
 | `src/agent/loop.ts` | added | `DiscoveryRunner` (SurfaceDriver + LlmProvider) |
 | `evidence/discovery/` | added | live lookup JSONL + screenshots |
@@ -191,7 +192,16 @@ irreversible_steps: (none)
 
 Fill step uses `$inputs.member_id` (no baked member id). Written to `evidence/discovery/artifact.json`.
 
-Replay output is still TBD until Task 08.
+**Output** (Task 08 live replay):
+
+```text
+replay lookup 12345 → status=success outputs.savings_balance=4250.00
+replay lookup 99999 → status=business_outcome outcome_code=MEMBER_NOT_FOUND
+replay open_subaccount (no --confirm) → status=needs_intervention step_id=s04_open
+replay open_subaccount --confirm → status=success
+```
+
+Four Playwright replays finished in ~4.5s total.
 
 Paste discover, replay success, replay not-found, and escalate (or point at `evidence/*` **and** quote `result.json` status fields).
 
